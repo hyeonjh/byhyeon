@@ -1,6 +1,3 @@
-# 민감 정보
-.env
-
 # Airflow 로그 및 임시 파일
 airflow/airflow.db
 airflow/airflow.cfg
@@ -10,3 +7,13 @@ airflow/unittests.cfg
 
 # 로그 파일 무시
 *.log
+
+# Python 컴파일된 파일들 무시
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 기타 무시할 파일들
+*.env
+*.sqlite3

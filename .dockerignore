@@ -4,9 +4,6 @@ __pycache__/
 *.pyo
 *.pyd
 
-# 환경파일 (민감 정보)
-.env
-
 # 로그파일
 *.log
 
@@ -20,3 +17,7 @@ airflow/airflow.cfg
 airflow/logs/
 airflow/tmp/
 airflow/unittests.cfg
+
+# 기타 무시할 파일들
+*.env
+*.sqlite3
