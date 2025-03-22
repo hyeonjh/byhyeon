@@ -13,12 +13,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Compress files to zip
-        run: |
-          zip -r deploy.zip ./*
+      - name: Set up Docker Buildx (선택 사항)
+        uses: docker/setup-buildx-action@v3
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: deploy-artifact
-          path: deploy.zip
+      - name: Deploy using Docker Compose
+        run: |
+          docker compose down || true
+          docker compose up -d --build
