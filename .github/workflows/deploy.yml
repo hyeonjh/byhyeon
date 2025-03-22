@@ -39,10 +39,9 @@ jobs:
           docker compose up -d --build
       - name: Debug Secrets (safe)
         run: |
-          [[ -z "${{ secrets.AIRFLOW_TRIGGER_URL }}" ]] && echo "❌ AIRFLOW_TRIGGER_URL missing" || echo "✅ AIRFLOW_TRIGGER_URL ok"
           [[ -z "${{ secrets.AWS_ACCESS_KEY_ID }}" ]] && echo "❌ AWS_ACCESS_KEY_ID missing" || echo "✅ AWS_ACCESS_KEY_ID ok"
           [[ -z "${{ secrets.AWS_SECRET_ACCESS_KEY }}" ]] && echo "❌ AWS_SECRET_ACCESS_KEY missing" || echo "✅ AWS_SECRET_ACCESS_KEY ok"
-          [[ -z "${{ secrets.AWS_DEFAULT_REGION }}" ]] && echo "❌ AWS_DEFAULT_REGION missing" || echo "✅ AWS_DEFAULT_REGION ok"
+          [[ -z "${{ secrets.AWS_REGION }}" ]] && echo "❌ AWS_REGION missing" || echo "✅ AWS_REGION ok"
           [[ -z "${{ secrets.S3_BUCKET_NAME }}" ]] && echo "❌ S3_BUCKET_NAME missing" || echo "✅ S3_BUCKET_NAME ok"
 
 
