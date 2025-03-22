@@ -6,6 +6,11 @@ services:
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
       - AIRFLOW__WEBSERVER__SECRET_KEY=supersecretkey
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      # 추가적인 환경 변수는 여기서 설정 (GitHub Secrets에서 불러오기)
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}  # GitHub Secrets에서 환경 변수 불러오기
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
     ports:
       - "8080:8080"  # 웹 UI
     volumes:

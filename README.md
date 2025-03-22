@@ -102,19 +102,29 @@ pkill -f run.sh
 
 ---
 
-## 📁 프로젝트 구조 예시
+## 📁 프로젝트 구조 
 
 ```
-voice-clone/
+VOICE-CLONE/
 ├── .github/
 │   └── workflows/
 │       └── deploy.yml
-├── setup.sh
-├── Dockerfile
+├── airflow/
+│   ├── dags/
+│   │   └── local_s3_transfer_dag.py
+│   └── task/
+│       ├── aws_conn.py
+│       ├── download_from_s3.py
+│       └── upload_to_s3.py
+├── .dockerignore
+├── .gitignore
 ├── docker-compose.yml
 ├── requirements.txt
+├── Dockerfile
 ├── main.py
 ├── README.md
+└── setup.sh
+
 ```
 
 ---

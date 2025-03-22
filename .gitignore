@@ -1,0 +1,12 @@
+# 민감 정보
+.env
+
+# Airflow 로그 및 임시 파일
+airflow/airflow.db
+airflow/airflow.cfg
+airflow/logs/
+airflow/tmp/
+airflow/unittests.cfg
+
+# 로그 파일 무시
+*.log

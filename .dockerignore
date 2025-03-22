@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 환경파일 (민감 정보)
+.env
+
+# 로그파일
+*.log
+
+# Git 관련
+.git
+.gitignore
+
+# Airflow 관련 (로그/DB 파일)
+airflow/airflow.db
+airflow/airflow.cfg
+airflow/logs/
+airflow/tmp/
+airflow/unittests.cfg
