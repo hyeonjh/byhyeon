@@ -20,3 +20,10 @@ jobs:
         run: |
           docker compose down || true
           docker compose up -d --build
+
+      - name: Trigger Airflow DAG
+        run: |
+          curl -X POST "${{ secrets.AIRFLOW_TRIGGER_URL }}" \
+          -u "${{ secrets.AIRFLOW_USERNAME }}:${{ secrets.AIRFLOW_PASSWORD }}" \
+          -H "Content-Type: application/json" \
+          -d '{"conf": {"filename": "example_file_name"}}'
