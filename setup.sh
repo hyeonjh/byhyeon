@@ -1,20 +1,27 @@
 #!/bin/bash
 
-echo "📦 Updating system & installing packages..."
-
-# 시스템 업데이트 및 필수 패키지 설치
+echo "📦 시스템 패키지 설치 중..."
 sudo apt update
 sudo apt install -y git zip unzip curl docker.io docker-compose
 
-# Docker 권한 설정 (재로그인 필요)
+# Docker 그룹 권한 설정
 sudo usermod -aG docker $USER
 
+echo ""
 echo "✅ 필수 패키지 설치 완료"
+echo ""
 
-# (옵션) Docker 빌드 및 실행
-if [ -f docker-compose.yml ]; then
-  echo "🚀 docker-compose.yml 감지됨. 컨테이너 빌드 및 실행 중..."
-  docker-compose up -d --build
-else
-  echo "⚠️ docker-compose.yml 파일이 없습니다. 수동으로 실행해 주세요."
-fi
+echo "⚠️ 현재 터미널 세션에서는 Docker 권한이 아직 적용되지 않았습니다."
+echo "👉 아래 순서대로 진행해주세요:"
+echo ""
+echo "1. WSL2 터미널을 종료하고 다시 실행하세요 (exit 입력 후 재접속)"
+echo "2. 다음 명령어를 입력하여 컨테이너를 실행하세요:"
+echo ""
+echo "   cd ~/voice-clone"
+echo "   docker-compose up -d --build"
+echo ""
+echo "🚀 그럼 http://localhost:8000 에서 서비스를 확인할 수 있습니다!"
+echo ""
+
+# setup.sh는 여기서 종료
+exit 0
