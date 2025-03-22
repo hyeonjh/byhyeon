@@ -1,0 +1,24 @@
+name: Deploy to WSL2 Docker
+
+on:
+  push:
+    branches:
+      - feature/voice-clone
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Compress files to zip
+        run: |
+          zip -r deploy.zip ./*
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-artifact
+          path: deploy.zip
