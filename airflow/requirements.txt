@@ -1,0 +1,2 @@
+boto3
+apache-airflow==2.7.2  # Airflow 버전 설정 (맞는 버전으로)

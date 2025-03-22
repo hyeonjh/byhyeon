@@ -1,23 +1,27 @@
 # 🗣️ Voice Clone 프로젝트
 
 이 프로젝트는 **음성 복제 기반 음성 생성 서비스**입니다.  
-WSL2 환경에서 누구나 쉽게 개발 환경을 구성하고, GitHub Actions를 활용한 자동 배포까지 연동할 수 있습니다.
+ 누구나 쉽게 개발 환경을 구성하고, GitHub Actions를 활용한 자동 배포까지 연동할 수 있습니다.
 
 ---
 
 ## 🐳 Docker 권한 설정 (중요)
 
-WSL2에서 `docker` 명령어를 사용하려면, 현재 계정을 Docker 그룹에 추가해야 합니다.  
+`docker` 명령어를 사용하려면, 현재 계정을 Docker 그룹에 추가해야 합니다.  
 이를 위해 아래 셋업 스크립트에서 자동으로 설정되며, **한 번만 재접속하면** 권한이 적용됩니다.
 
 ---
 
-## 1️⃣ WSL2 개발 환경 자동 세팅 (`setup.sh`)
+## 1️⃣ 개발 환경 자동 세팅 (`setup.sh`)
 
-WSL2 Ubuntu에서 아래 명령어를 입력하면 개발에 필요한 모든 환경이 자동으로 구성됩니다:
+Ubuntu에서 아래 명령어를 입력하면 개발에 필요한 모든 환경이 자동으로 구성됩니다:
 
 ```bash
 # 1. GitHub에서 프로젝트 클론
+# 초기 시스템 셋업
+sudo apt update
+sudo apt install -y git
+
 git clone https://github.com/hyeonjh/voice-clone.git
 cd voice-clone
 
@@ -26,18 +30,10 @@ chmod +x setup.sh
 ./setup.sh
 ```
 
-### ✅ setup.sh가 수행하는 작업
-
-- 📦 필수 패키지 설치:
-  - `zip`, `unzip`, `curl`, `docker`, `docker-compose`
-- 🔐 `docker` 그룹 권한 자동 설정
-- 🧘 이후 자동 컨테이너 실행을 위한 안내 출력
-
----
 
 ## 2️⃣ 터미널 재시작 (중요)
 
-셋업 완료 후에는 아래 명령어로 **WSL2 터미널을 종료하고 다시 실행**해주세요:
+셋업 완료 후에는 아래 명령어로 **터미널을 종료하고 다시 실행**해주세요:
 
 ```bash
 exit
@@ -46,7 +42,10 @@ exit
 다시 Ubuntu를 실행한 후, 아래 명령어로 컨테이너를 실행합니다:
 
 ```bash
+
 cd ~/voice-clone
+
+systemctl start docker
 docker-compose up -d --build
 ```
 
@@ -72,7 +71,7 @@ http://localhost:8000
 
 ## 4️⃣ GitHub Actions Self-Hosted Runner 설치 (선택)
 
-자동 배포(CI/CD)를 위해 GitHub Actions runner를 **로컬 WSL2**에 설치할 수 있습니다.  
+자동 배포(CI/CD)를 위해 GitHub Actions runner를 **Ubuntu**에 설치할 수 있습니다.  
 이 작업은 선택 사항이며, **1회만 수행하면 됩니다.**
 
 ```bash
@@ -89,7 +88,16 @@ tar xzf actions-runner-linux-x64-2.323.0.tar.gz
 ./config.sh --url https://github.com/hyeonjh/voice-clone --token <YOUR_TOKEN>
 
 # 5. Runner 실행
-./run.sh
+# ./run.sh
+
+# 백그라운드 실행 + 로그 저장
+nohup ./run.sh > ~/runner.log 2>&1 &
+
+# 로그 보기
+tail -f ~/runner.log
+
+# 중지
+pkill -f run.sh
 ```
 
 ---
