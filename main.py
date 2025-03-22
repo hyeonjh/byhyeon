@@ -5,9 +5,9 @@ import os
 app = FastAPI()
 
 # GitHub Secrets에서 불러오기 (환경 변수로)
-AIRFLOW_TRIGGER_URL = os.getenv("AIRFLOW_TRIGGER_URL")
-AIRFLOW_USERNAME = os.getenv("AIRFLOW_USERNAME")
-AIRFLOW_PASSWORD = os.getenv("AIRFLOW_PASSWORD")
+AIRFLOW_TRIGGER_URL = "http://localhost:8080/api/v1/dags/s3_upload_dag/dagRuns"
+AIRFLOW_USERNAME = "airflow"
+AIRFLOW_PASSWORD = "airflow"
 
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
