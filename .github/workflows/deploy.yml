@@ -13,8 +13,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx (선택 사항)
+      - name: Set up Docker Buildx (optional)
         uses: docker/setup-buildx-action@v3
+
+      - name: Generate entrypoint.sh for Airflow
+        run: |
+          mkdir -p airflow
+          echo '#!/bin/bash' > airflow/entrypoint.sh
+          echo 'airflow db init' >> airflow/entrypoint.sh
+          echo '' >> airflow/entrypoint.sh
+          echo 'airflow users create \\' >> airflow/entrypoint.sh
+          echo '    --username airflow \\' >> airflow/entrypoint.sh
+          echo '    --password airflow \\' >> airflow/entrypoint.sh
+          echo '    --firstname Admin \\' >> airflow/entrypoint.sh
+          echo '    --lastname User \\' >> airflow/entrypoint.sh
+          echo '    --role Admin \\' >> airflow/entrypoint.sh
+          echo '    --email admin@example.com || true' >> airflow/entrypoint.sh
+          echo '' >> airflow/entrypoint.sh
+          echo 'exec airflow webserver' >> airflow/entrypoint.sh
+          chmod +x airflow/entrypoint.sh
 
       - name: Deploy using Docker Compose
         run: |
@@ -24,6 +41,6 @@ jobs:
       - name: Trigger Airflow DAG
         run: |
           curl -X POST "${{ secrets.AIRFLOW_TRIGGER_URL }}" \
-          -u "${{ secrets.AIRFLOW_USERNAME }}:${{ secrets.AIRFLOW_PASSWORD }}" \
-          -H "Content-Type: application/json" \
-          -d '{"conf": {"filename": "example_file_name"}}'
+            -u "${{ secrets.AIRFLOW_USERNAME }}:${{ secrets.AIRFLOW_PASSWORD }}" \
+            -H "Content-Type: application/json" \
+            -d '{"conf": {"filename": "example_file_name"}}'
