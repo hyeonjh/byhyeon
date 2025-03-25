@@ -16,6 +16,20 @@ jobs:
       - name: Set up Docker Buildx (optional)
         uses: docker/setup-buildx-action@v3
 
+
+      - name: Set up SSH
+        run: |
+          echo "$PRIVATE_KEY" > id_rsa
+          chmod 600 id_rsa.pem
+          eval $(ssh-agent -s)
+          ssh-add id_rsa.pem
+
+      - name: Deploy to server
+        run: |
+          ssh -p 2222 user@your_server_ip "deploy-command"
+        env:
+          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
       - name: Generate entrypoint.sh for Airflow
         run: |
           mkdir -p airflow
