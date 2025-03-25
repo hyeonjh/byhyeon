@@ -32,6 +32,10 @@ services:
       - ./airflow/logs:/opt/airflow/logs
       - ./airflow/plugins:/opt/airflow/plugins
 
+      # entrypoint setting
+      - ./airflow/entrypoint.sh:/opt/airflow/entrypoint.sh
+    entrypoint: /opt/airflow/entrypoint.sh  
+
     command: webserver
     restart: always
 
@@ -60,6 +64,10 @@ services:
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/logs:/opt/airflow/logs
       - ./airflow/plugins:/opt/airflow/plugins
+      # entrypoint setting
+      - ./airflow/entrypoint.sh:/opt/airflow/entrypoint.sh
+    entrypoint: /opt/airflow/entrypoint.sh  
+
     command: scheduler
     restart: always
 

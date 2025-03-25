@@ -9,8 +9,8 @@ RUN pip install --upgrade pip
 
 # requirements.txt 복사 및 패키지 설치
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
+# RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt && pip install --no-cache-dir "email-validator>=2.0"
 # 나머지 앱 파일 복사
 COPY . .
 
