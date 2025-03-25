@@ -21,3 +21,7 @@ airflow/unittests.cfg
 # 기타 무시할 파일들
 *.env
 *.sqlite3
+
+
+.dockerignore
+Dockerfile

@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  fastapi:
+    container_name: fastapi
+    build:
+      context: ./fastapi
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./fastapi:/app
+    restart: always
+
+networks:
+  shared:
+    external: true

@@ -1,43 +1,22 @@
 #!/bin/bash
 
-echo "📦 Docker 및 필수 패키지 설치 중..."
+echo "🚀 [1] Docker 네트워크(shared) 생성 중..."
+docker network inspect shared >/dev/null 2>&1 || docker network create shared
 
-# 기본 패키지
-sudo apt update
-sudo apt install -y ca-certificates curl gnupg zip unzip
+echo "📁 [2] Airflow 디렉토리 준비 중..."
+mkdir -p airflow/logs
+mkdir -p airflow/plugins
 
-# Docker 공식 GPG 키 추가
-sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo "📝 [3] .env 파일 확인 중..."
+if [ ! -f ".env" ]; then
+  echo "AIRFLOW_UID=50000" > .env
+  echo ".env 파일 생성 완료 ✅"
+fi
 
-# Docker 공식 저장소 추가
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+echo "🐳 [4] docker-compose 서비스 실행 중..."
+docker-compose \
+  -f docker-compose-postgres.yml \
+  -f docker-compose-airflow.yml \
+  -f docker-compose-fastapi.yml up -d
 
-# 저장소 갱신 후 Docker 및 Compose 플러그인 설치
-sudo apt update
-sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
-# 현재 사용자에 Docker 그룹 권한 부여
-sudo usermod -aG docker $USER
-
-echo ""
-echo "✅ Docker 및 필수 패키지 설치 완료"
-echo ""
-
-echo "⚠️ 현재 터미널 세션에서는 Docker 권한이 아직 적용되지 않았습니다."
-echo "👉 아래 순서대로 진행해주세요:"
-echo ""
-echo "1. 터미널을 종료하고 다시 실행하세요 (exit 입력 후 재접속)"
-echo "2. 다음 명령어를 입력하여 컨테이너를 실행하세요:"
-echo ""
-echo "   cd ~/voice-clone"
-echo "   sudo systemctl start docker"
-echo "   docker compose up -d --build"
-echo ""
-echo "🚀 그럼 http://localhost:8000 에서 서비스를 확인할 수 있습니다!"
-echo ""
-
-exit 0
+echo "🎉 모든 서비스가 실행되었습니다!"
