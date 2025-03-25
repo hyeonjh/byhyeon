@@ -1,0 +1,8 @@
+# 👉 FastAPI 관련 패키지
+fastapi
+uvicorn
+requests
+python-multipart
+
+# 👉 AWS S3 연동
+boto3

@@ -17,3 +17,9 @@ __pycache__/
 # 기타 무시할 파일들
 *.env
 *.sqlite3
+
+# IDE/OS
+.DS_Store
+Thumbs.db
+
+setup-docker.sh

@@ -37,17 +37,10 @@ jobs:
         run: |
           docker compose down || true
           docker compose up -d --build
+          
       - name: Debug Secrets (safe)
         run: |
           [[ -z "${{ secrets.AWS_ACCESS_KEY_ID }}" ]] && echo "❌ AWS_ACCESS_KEY_ID missing" || echo "✅ AWS_ACCESS_KEY_ID ok"
           [[ -z "${{ secrets.AWS_SECRET_ACCESS_KEY }}" ]] && echo "❌ AWS_SECRET_ACCESS_KEY missing" || echo "✅ AWS_SECRET_ACCESS_KEY ok"
           [[ -z "${{ secrets.AWS_REGION }}" ]] && echo "❌ AWS_REGION missing" || echo "✅ AWS_REGION ok"
           [[ -z "${{ secrets.S3_BUCKET_NAME }}" ]] && echo "❌ S3_BUCKET_NAME missing" || echo "✅ S3_BUCKET_NAME ok"
-
-
-      # - name: Trigger Airflow DAG
-      #   run: |
-      #     curl -X POST "${{ secrets.AIRFLOW_TRIGGER_URL }}" \
-      #       -u "${{ secrets.AIRFLOW_USERNAME }}:${{ secrets.AIRFLOW_PASSWORD }}" \
-      #       -H "Content-Type: application/json" \
-      #       -d '{"conf": {"filename": "example_file_name"}}'

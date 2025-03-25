@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  airflow-webserver:
+    image: apache/airflow:2.7.2
+    container_name: airflow-webserver
+
+    # .env : AIRFLOW_UID
+    user: "${AIRFLOW_UID}:0"   
+    env_file:
+      - ./airflow/.env
+    
+    #postgresql connect
+    depends_on:
+      - postgres
+
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__WEBSERVER__SECRET_KEY=supersecretkey
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+
+      #postsql env add 
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+
+    command: webserver
+    restart: always
+
+  airflow-scheduler:
+    image: apache/airflow:2.7.2
+    container_name: airflow-scheduler
+
+    # .env : AIRFLOW_UID
+    user: "${AIRFLOW_UID}:0"   
+    env_file:
+      - ./airflow/.env 
+
+    #postgresql connect
+    depends_on:
+      - postgres
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+      #postsql env add 
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+    command: scheduler
+    restart: always
+
+networks:
+  shared:
+    external: true
