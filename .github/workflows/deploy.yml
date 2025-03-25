@@ -51,6 +51,9 @@ jobs:
           docker compose down || true
           docker compose up -d --build
           EOF
+
+          chmod +x ~/voice-clone/airflow/entrypoint.sh
+
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
