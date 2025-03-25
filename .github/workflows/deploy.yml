@@ -16,42 +16,44 @@ jobs:
       - name: Set up Docker Buildx (optional)
         uses: docker/setup-buildx-action@v3
 
-
       - name: Set up SSH
         run: |
           echo "$PRIVATE_KEY" > id_rsa
           chmod 600 id_rsa
           eval $(ssh-agent -s)
           ssh-add id_rsa
-
-      - name: Deploy to server
-        run: |
-          ssh -p 2222 ${{ secrets.user }}@${{ secrets.server_ip }}
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Generate entrypoint.sh for Airflow
+      - name: Deploy to server
         run: |
-          mkdir -p airflow
-          echo '#!/bin/bash' > airflow/entrypoint.sh
-          echo 'airflow db init' >> airflow/entrypoint.sh
-          echo '' >> airflow/entrypoint.sh
-          echo 'airflow users create \\' >> airflow/entrypoint.sh
-          echo '    --username airflow \\' >> airflow/entrypoint.sh
-          echo '    --password airflow \\' >> airflow/entrypoint.sh
-          echo '    --firstname Admin \\' >> airflow/entrypoint.sh
-          echo '    --lastname User \\' >> airflow/entrypoint.sh
-          echo '    --role Admin \\' >> airflow/entrypoint.sh
-          echo '    --email admin@example.com || true' >> airflow/entrypoint.sh
-          echo '' >> airflow/entrypoint.sh
-          echo 'exec airflow webserver' >> airflow/entrypoint.sh
-          chmod +x airflow/entrypoint.sh
+          ssh -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+          mkdir -p ~/airflow
 
-      - name: Deploy using Docker Compose
-        run: |
+          cat << 'EOT' > ~/airflow/entrypoint.sh
+          #!/bin/bash
+          airflow db init
+
+          airflow users create \
+            --username airflow \
+            --password airflow \
+            --firstname Admin \
+            --lastname User \
+            --role Admin \
+            --email admin@example.com || true
+
+          exec airflow webserver
+          EOT
+
+          chmod +x ~/airflow/entrypoint.sh
+
+          cd ~/voice-clone # 여기에 docker-compose.yml 있는 곳
           docker compose down || true
           docker compose up -d --build
-          
+          EOF
+        env:
+          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
       - name: Debug Secrets (safe)
         run: |
           [[ -z "${{ secrets.AWS_ACCESS_KEY_ID }}" ]] && echo "❌ AWS_ACCESS_KEY_ID missing" || echo "✅ AWS_ACCESS_KEY_ID ok"
