@@ -27,7 +27,7 @@ jobs:
 
       - name: Deploy to server
         run: |
-          ssh -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+          ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
           mkdir -p ~/airflow
 
           cat << 'EOT' > ~/airflow/entrypoint.sh
