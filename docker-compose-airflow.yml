@@ -2,6 +2,8 @@ version: '3.8'
 
 services:
   airflow-webserver:
+    build:
+     context: ./airflow
     image: apache/airflow:2.7.2
     container_name: airflow-webserver
 
@@ -42,6 +44,8 @@ services:
       - shared  
 
   airflow-scheduler:
+    build:
+     context: ./airflow
     image: apache/airflow:2.7.2
     container_name: airflow-scheduler
 
