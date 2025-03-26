@@ -24,49 +24,35 @@ jobs:
           ssh-add id_rsa
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-
       - name: Deploy to server
         run: |
-          ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-          
-          cd ~/voice-clone
-
-          git reset --hard
-          git clean -fd
-          git pull origin main
-          
-          mkdir -p ~/voice-clone/airflow
-
-          cat << 'EOT' > ~/voice-clone/airflow/entrypoint.sh
-          #!/bin/bash
-          airflow db init
-
-          airflow users create \
-            --username airflow \
-            --password airflow \
-            --firstname Admin \
-            --lastname User \
-            --role Admin \
-            --email admin@example.com || true
-
-          exec airflow webserver
-          EOT
-
-          chmod +x ~/airflow/entrypoint.sh
-
-          cd ~/voice-clone # 여기에 docker-compose.yml 있는 곳
-          docker compose down || true
-          docker compose -f docker-compose-airflow.yml -f docker-compose-postgres.yml -f docker-compose-fastapi.yml up -d --build
-          EOF
-
-          chmod +x ~/voice-clone/airflow/entrypoint.sh
-
+            ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << EOF
+        
+            cd ~/voice-clone
+        
+            git reset --hard
+            git clean -fd
+            git pull origin main
+        
+            mkdir -p airflow
+        
+            echo '#!/bin/bash
+            airflow db init
+        
+            airflow users create \
+              --username airflow \
+              --password airflow \
+              --firstname Admin \
+              --lastname User \
+              --role Admin \
+              --email admin@example.com || true
+        
+            exec airflow webserver' > airflow/entrypoint.sh
+        
+            chmod +x airflow/entrypoint.sh
+        
+            docker compose -f docker-compose-airflow.yml -f docker-compose-postgres.yml -f docker-compose-fastapi.yml up -d --build
+            EOF
+            
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Debug Secrets (safe)
-        run: |
-          [[ -z "${{ secrets.AWS_ACCESS_KEY_ID }}" ]] && echo "❌ AWS_ACCESS_KEY_ID missing" || echo "✅ AWS_ACCESS_KEY_ID ok"
-          [[ -z "${{ secrets.AWS_SECRET_ACCESS_KEY }}" ]] && echo "❌ AWS_SECRET_ACCESS_KEY missing" || echo "✅ AWS_SECRET_ACCESS_KEY ok"
-          [[ -z "${{ secrets.AWS_REGION }}" ]] && echo "❌ AWS_REGION missing" || echo "✅ AWS_REGION ok"
-          [[ -z "${{ secrets.S3_BUCKET_NAME }}" ]] && echo "❌ S3_BUCKET_NAME missing" || echo "✅ S3_BUCKET_NAME ok"
