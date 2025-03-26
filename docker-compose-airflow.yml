@@ -6,7 +6,6 @@ services:
      context: ./airflow
     image: voice-clone-airflow:latest
     container_name: airflow-webserver
-
     # .env : AIRFLOW_UID
     user: "${AIRFLOW_UID}:0"   
     env_file:
@@ -35,7 +34,7 @@ services:
       - ./airflow/plugins:/opt/airflow/plugins
 
       # entrypoint setting
-      - ./airflow/entrypoint.sh:/opt/airflow/entrypoint.sh
+      # - ./airflow/entrypoint.sh:/opt/airflow/entrypoint.sh
     entrypoint: /opt/airflow/entrypoint.sh  
 
     command: webserver
@@ -48,7 +47,6 @@ services:
      context: ./airflow
     image: voice-clone-airflow:latest
     container_name: airflow-scheduler
-
     # .env : AIRFLOW_UID
     user: "${AIRFLOW_UID}:0"   
     env_file:
@@ -71,7 +69,7 @@ services:
       - ./airflow/logs:/opt/airflow/logs
       - ./airflow/plugins:/opt/airflow/plugins
       # entrypoint setting
-      - ./airflow/entrypoint.sh:/opt/airflow/entrypoint.sh
+      # - ./airflow/entrypoint.sh:/opt/airflow/entrypoint.sh
     entrypoint: /opt/airflow/entrypoint.sh  
 
     command: scheduler
