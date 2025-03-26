@@ -23,3 +23,7 @@ __pycache__/
 Thumbs.db
 
 setup-docker.sh
+
+
+# airflow 전용 임시 파일
+airflow/entrypoint.sh
