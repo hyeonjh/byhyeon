@@ -28,6 +28,11 @@ jobs:
       - name: Deploy to server
         run: |
           ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+          
+          cd ~/voice-clone
+
+          git pull origin main
+          
           mkdir -p ~/voice-clone/airflow
 
           cat << 'EOT' > ~/voice-clone/airflow/entrypoint.sh
