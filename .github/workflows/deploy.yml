@@ -52,6 +52,8 @@ jobs:
             'exec airflow webserver' > airflow/entrypoint.sh
         
             chmod +x airflow/entrypoint.sh
+
+            docker compose -f docker-compose-airflow.yml -f docker-compose-postgres.yml -f docker-compose-fastapi.yml down --remove-orphans
         
             docker compose -f docker-compose-airflow.yml -f docker-compose-postgres.yml -f docker-compose-fastapi.yml up -d --build
             EOF
