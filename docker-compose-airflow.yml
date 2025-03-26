@@ -4,7 +4,7 @@ services:
   airflow-webserver:
     build:
      context: ./airflow
-    image: apache/airflow:2.7.2
+    image: voice-clone-airflow:latest
     container_name: airflow-webserver
 
     # .env : AIRFLOW_UID
@@ -46,7 +46,7 @@ services:
   airflow-scheduler:
     build:
      context: ./airflow
-    image: apache/airflow:2.7.2
+    image: voice-clone-airflow:latest
     container_name: airflow-scheduler
 
     # .env : AIRFLOW_UID
