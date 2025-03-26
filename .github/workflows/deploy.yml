@@ -31,6 +31,8 @@ jobs:
           
           cd ~/voice-clone
 
+          git reset --hard
+          git clean -fd
           git pull origin main
           
           mkdir -p ~/voice-clone/airflow
@@ -54,7 +56,7 @@ jobs:
 
           cd ~/voice-clone # 여기에 docker-compose.yml 있는 곳
           docker compose down || true
-          docker compose -f docker-compose-airflow.yml -f docker-compose-postgres.yml up -d --build
+          docker compose -f docker-compose-airflow.yml -f docker-compose-postgres.yml -f docker-compose-fastapi.yml up -d --build
           EOF
 
           chmod +x ~/voice-clone/airflow/entrypoint.sh
