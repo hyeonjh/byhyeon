@@ -31,6 +31,8 @@ jobs:
           
           cd ~/voice-clone
 
+          git reset --hard
+          git clean -fd
           git pull origin main
           
           mkdir -p ~/voice-clone/airflow
