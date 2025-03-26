@@ -10,6 +10,8 @@ services:
     volumes:
       - ./fastapi:/app
     restart: always
+    networks:
+      - shared
 
 networks:
   shared:
