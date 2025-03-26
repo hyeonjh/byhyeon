@@ -4,5 +4,5 @@ COPY requirements.txt /requirements.txt
 RUN pip install --no-cache-dir -r /requirements.txt
 
 # ✅ entrypoint.sh 복사
-COPY airflow/entrypoint.sh /opt/airflow/entrypoint.sh
+COPY entrypoint.sh /opt/airflow/entrypoint.sh
 RUN chmod +x /opt/airflow/entrypoint.sh
