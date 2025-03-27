@@ -21,6 +21,9 @@ RUN chmod +x /opt/airflow/entrypoint.sh
 # airflow 유저로 다시 돌아감
 USER airflow
 
+# PATH 설정 (중요)
+ENV PATH="/home/airflow/.local/bin:$PATH"
+
 # requirements.txt 설치 (airflow 환경이 깨지지 않게 유저 airflow로 설치!)
 COPY requirements.txt /requirements.txt
 RUN pip install --no-cache-dir -r /requirements.txt
