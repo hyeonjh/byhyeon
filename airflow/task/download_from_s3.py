@@ -2,6 +2,9 @@
 
 import os
 from aws_conn import get_s3_client, get_bucket_name  # aws_conn.py에서 S3 클라이언트와 버킷 이름 가져오기
+from dotenv import load_dotenv
+
+load_dotenv()  
 
 def download_m4a_from_s3():
     s3_client = get_s3_client()  # S3 클라이언트를 한 번만 생성하여 가져오기

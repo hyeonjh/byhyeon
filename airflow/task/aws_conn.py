@@ -2,7 +2,9 @@
 
 import os
 import boto3
+from dotenv import load_dotenv
 
+load_dotenv()  
 # AWS 자격 증명과 리전을 환경 변수로 설정
 def get_s3_client():
     # 환경 변수에서 AWS 자격 증명 읽기

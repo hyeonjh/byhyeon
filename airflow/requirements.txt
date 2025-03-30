@@ -1,4 +1,3 @@
-
+boto3
+python-dotenv
 apache-airflow-providers-amazon
-boto3 
-email-validator
