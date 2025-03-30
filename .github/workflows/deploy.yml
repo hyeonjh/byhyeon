@@ -55,7 +55,7 @@ jobs:
 
             docker compose -f docker-compose-airflow.yml -f docker-compose-postgres.yml -f docker-compose-fastapi.yml down --remove-orphans
         
-            docker compose -f docker-compose-airflow.yml -f docker-compose-postgres.yml -f docker-compose-fastapi.yml up -d --build
+            docker compose -f docker-compose-postgres.yml -f docker-compose-airflow.yml -f docker-compose-fastapi.yml up -d --build
             EOF
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
