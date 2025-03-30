@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:13
@@ -20,4 +18,4 @@ volumes:
   
 networks:
   shared:
-    name: shared
+    external: true
