@@ -1,5 +1,3 @@
-version: '3.8'
-
 # 하나로 실행해보기 웹서버랑 , 스케쥴러 나눈이유 찾아보기 
 #빌드할때 도커파일 찾아가야하는데 , 2개 하나의 도커파일로 실행하는지 확인해보기 
 # airflow_dags: /opt/airflow/dags
@@ -82,7 +80,7 @@ services:
     command: scheduler
     restart: always
     networks:
-      - shared    #driver bridge elk라는 공간안에 bridge로 연결
+      - shared    
 
 networks:
   shared:
