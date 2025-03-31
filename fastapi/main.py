@@ -5,4 +5,4 @@ app = FastAPI(root_path="/api")
 
 @app.get("/")
 def read_root():
-    return {"message": "🚀 FastAPI with root_path '/api'"}
+    return {"message": "🚀 꿀꿀 돼지 "}
