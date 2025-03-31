@@ -35,23 +35,7 @@ jobs:
             git clean -fd
             git pull origin main
         
-            mkdir -p airflow
-        
-            # ✅ 파일을 직접 줄바꿈 포함해 생성
-            printf '%s\n' '#!/bin/bash' \
-            'airflow db init' \
-            '' \
-            'airflow users create \' \
-            '  --username airflow \' \
-            '  --password airflow \' \
-            '  --firstname Admin \' \
-            '  --lastname User \' \
-            '  --role Admin \' \
-            '  --email admin@example.com || true' \
-            '' \
-            'exec airflow webserver' > airflow/entrypoint.sh
-        
-            chmod +x airflow/entrypoint.sh
+            # ✅ Airflow entrypoint.sh 생성 제거
 
             docker compose -f docker-compose-airflow.yml -f docker-compose-postgres.yml -f docker-compose-fastapi.yml down --remove-orphans
         
