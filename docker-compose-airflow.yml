@@ -8,7 +8,7 @@
 services:
   airflow-webserver:
     build:
-     context: ./airflow location
+     context: ./airflow
     image: voice-clone-airflow:latest
     container_name: airflow-webserver
     # .env : AIRFLOW_UID
