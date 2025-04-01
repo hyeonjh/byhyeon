@@ -14,9 +14,5 @@ if [ ! -f ".env" ]; then
 fi
 
 echo "🐳 [4] docker-compose 서비스 실행 중..."
-docker-compose \
-  -f docker-compose-postgres.yml \
-  -f docker-compose-airflow.yml \
-  -f docker-compose-fastapi.yml up -d
-
+docker compose -f docker-compose-postgres.yml -f docker-compose-airflow.yml -f docker-compose-fastapi.yml up -d --build
 echo "🎉 모든 서비스가 실행되었습니다!"
