@@ -27,10 +27,10 @@ services:
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_REGION=${AWS_REGION}
       - S3_BUCKET_NAME=${S3_BUCKET_NAME}
-      - AIRFLOW__WEBSERVER__BASE_URL=https://hyeonjh.duckdns.org
+      - AIRFLOW__WEBSERVER__BASE_URL=${AIRFLOW__WEBSERVER__BASE_URL}
 
       #postsql env add 
-      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://hyeonjh:hyeonjh@192.168.0.12:5432/hyeonjhdb
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=${AIRFLOW__DATABASE__SQL_ALCHEMY_CONN}
       - _PIP_ADDITIONAL_REQUIREMENTS=apache-airflow-providers-amazon
     ports:
       - "8080:8080"
@@ -65,7 +65,7 @@ services:
       - AWS_REGION=${AWS_REGION}
       - S3_BUCKET_NAME=${S3_BUCKET_NAME}
       #postsql env add 
-      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=${AIRFLOW__CORE__SQL_ALCHEMY_CONN}
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=${AIRFLOW__DATABASE__SQL_ALCHEMY_CONN}
       # aws 관련
       - _PIP_ADDITIONAL_REQUIREMENTS=apache-airflow-providers-amazon
     volumes:
