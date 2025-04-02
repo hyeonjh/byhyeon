@@ -18,8 +18,7 @@ services:
     
     #postgresql connect
     depends_on:
-      - postgres
-
+      - airflow-scheduler # 도커 컨테이너 실행 "순서"를 보장 (필수아님)
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
@@ -31,8 +30,7 @@ services:
       - AIRFLOW__WEBSERVER__BASE_URL=https://hyeonjh.duckdns.org
 
       #postsql env add 
-      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
-      # aws 관련
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://hyeonjh:hyeonjh@192.168.0.12:5432/hyeonjhdb
       - _PIP_ADDITIONAL_REQUIREMENTS=apache-airflow-providers-amazon
     ports:
       - "8080:8080"
@@ -62,7 +60,7 @@ services:
 
     #postgresql connect
     depends_on:
-      - postgres
+
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
@@ -71,7 +69,7 @@ services:
       - AWS_REGION=${AWS_REGION}
       - S3_BUCKET_NAME=${S3_BUCKET_NAME}
       #postsql env add 
-      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=${AIRFLOW__CORE__SQL_ALCHEMY_CONN}
       # aws 관련
       - _PIP_ADDITIONAL_REQUIREMENTS=apache-airflow-providers-amazon
     volumes:

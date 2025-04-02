@@ -1,21 +1,21 @@
-services:
-  postgres:
-    image: postgres:13
-    container_name: shared-postgres
-    environment:
-      POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
-      POSTGRES_DB: airflow
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - shared
+# services:
+#   postgres:
+#     image: postgres:13
+#     container_name: shared-postgres
+#     environment:
+#       POSTGRES_USER: airflow
+#       POSTGRES_PASSWORD: airflow
+#       POSTGRES_DB: airflow
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+#     networks:
+#       - shared
 
-volumes:
-  postgres_data:
+# volumes:
+#   postgres_data:
   
-networks:
-  shared:
-    external: true
+# networks:
+#   shared:
+#     external: true
