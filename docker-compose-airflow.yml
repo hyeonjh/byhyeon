@@ -57,10 +57,6 @@ services:
     user: "${AIRFLOW_UID}:0"   
     env_file:
       - ./airflow/.env 
-
-    #postgresql connect
-    depends_on:
-
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
