@@ -37,9 +37,9 @@ jobs:
         
             # ✅ Airflow entrypoint.sh 생성 제거
 
-            docker compose -f docker-compose-airflow.yml -f docker-compose-fastapi.yml down --remove-orphans
+            docker compose -f docker-compose-airflow.yml -f docker-compose-fastapi.yml -f docker-compose-monitoring.yml down --remove-orphans
         
-            docker compose -f docker-compose-airflow.yml -f docker-compose-fastapi.yml up -d --build
+            docker compose -f docker-compose-airflow.yml -f docker-compose-fastapi.yml -f docker-compose-monitoring.yml up -d --build
             EOF
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
