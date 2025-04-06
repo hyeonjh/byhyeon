@@ -30,10 +30,10 @@ def read_root():
         </head>
         <body>
             <h1>🔍 모니터링 도구 바로가기</h1>
-            <a class="button" href="https://www.byhyeon.com/grafana" target="_blank">Grafana</a>
-            <a class="button" href="https://www.byhyeon.com/prometheus" target="_blank">Prometheus</a>
-            <a class="button" href="https://www.byhyeon.com/cadvisor" target="_blank">cAdvisor</a>
-            <a class="button" href="https://hyeonjh.duckdns.org" target="_blank">Airflow</a>
+            <a class="button" href="https://grafana.byhyeon.com" target="_blank">Grafana</a>
+            <a class="button" href="https://prometheus.byhyeon.com" target="_blank">Prometheus</a>
+            <a class="button" href="https://cadvisor.byhyeon.com" target="_blank">cAdvisor</a>
+            <a class="button" href="https://airflow.byhyeon.com" target="_blank">Airflow</a>
         </body>
     </html>
     """
