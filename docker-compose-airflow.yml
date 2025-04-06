@@ -30,7 +30,7 @@ services:
       - AIRFLOW__WEBSERVER__BASE_URL=${AIRFLOW__WEBSERVER__BASE_URL}
       - AIRFLOW__CORE__DEFAULT_TIMEZONE=Asia/Seoul
 
-      # airflow db migrate시 메타정보가 저장되는 스키마 변경 
+      # airflow db migrate시 메타정보가 바라보는 스키마 변경 
       - AIRFLOW__DATABASE__SQL_ALCHEMY_SCHEMA=airflow_meta
 
       #postsql env add 
