@@ -2,6 +2,19 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
+from pydantic import BaseModel
+import openai
+import os
+from dotenv import load_dotenv
+
+load_dotenv()  # .env 파일에서 OPENAI_API_KEY 로드
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+class PromptRequest(BaseModel):
+    prompt: str
+
+
+
 app = FastAPI()  # ⛔ root_path 생략 또는 제거
 
 @app.get("/", response_class=HTMLResponse)
@@ -37,3 +50,15 @@ def read_root():
         </body>
     </html>
     """
+
+@app.post("/ask")
+def ask_gpt(request: PromptRequest):
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "너는 음성 파일 처리를 도와주는 AI야."},
+            {"role": "user", "content": request.prompt}
+        ]
+    )
+    gpt_reply = response["choices"][0]["message"]["content"]
+    return {"reply": gpt_reply}
