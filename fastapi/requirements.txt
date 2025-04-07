@@ -9,5 +9,4 @@ email-validator>=2.0
 boto3
 
 # openai 연동
-
-fastapi
+openai
