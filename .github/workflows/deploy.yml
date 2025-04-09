@@ -32,22 +32,34 @@ jobs:
           cd ~/voice-clone
           git pull origin main
 
-          CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r $(git rev-parse HEAD))
+          # 변경된 파일 목록 확인
+          PREVIOUS=\$(git rev-parse HEAD~1)
+          CURRENT=\$(git rev-parse HEAD)
+          CHANGED_FILES=\$(git diff --name-only \$PREVIOUS \$CURRENT)
+
+
+          echo "🔄 변경된 파일 목록:"
+          echo "\$CHANGED_FILES" | sed 's/^/📁 /'
 
           if echo "$CHANGED_FILES" | grep -qE '^fastapi/|docker-compose-fastapi.yml'; then
-            echo '▶️ FastAPI 변경 감지 → fastapi 재시작'
-            docker compose -f docker-compose-fastapi.yml up -d fastapi
+            echo '▶️ FastAPI 변경 감지 → 재빌드 및 재시작'
+            docker compose -f docker-compose-fastapi.yml up --build --force-recreate -d fastapi
           fi
 
           if echo "$CHANGED_FILES" | grep -qE '^airflow/|docker-compose-airflow.yml'; then
-            echo '▶️ Airflow 변경 감지 → airflow 재시작'
-            docker compose -f docker-compose-airflow.yml up -d airflow-webserver airflow-scheduler
+            echo '▶️ Airflow 변경 감지 → 재빌드 및 재시작'
+            docker compose -f docker-compose-airflow.yml up --build --force-recreate -d airflow-webserver airflow-scheduler
           fi
 
           if echo "$CHANGED_FILES" | grep -qE '^monitoring/|docker-compose-monitoring.yml'; then
-            echo '▶️ Monitoring 변경 감지 → monitoring 재시작'
-            docker compose -f docker-compose-monitoring.yml up -d grafana prometheus cadvisor
+            echo '▶️ Monitoring 변경 감지 → 재빌드 및 재시작'
+            docker compose -f docker-compose-monitoring.yml up --build --force-recreate -d grafana prometheus cadvisor
           fi
           EOF
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+
+      - name: Cleanup SSH Key
+        run: rm -f id_rsa
