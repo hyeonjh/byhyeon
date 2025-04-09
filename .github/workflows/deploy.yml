@@ -28,7 +28,7 @@ jobs:
       - name: Deploy changed services
         run: |
           chmod 600 id_rsa
-          ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+          ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << EOF
           set -e
           cd ~/voice-clone
           git pull origin main
