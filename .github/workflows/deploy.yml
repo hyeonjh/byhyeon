@@ -34,9 +34,9 @@ jobs:
           git pull origin main
 
           # 변경된 파일 목록 확인
-          PREVIOUS=\\$(git rev-parse HEAD~1)
-          CURRENT=\\$(git rev-parse HEAD)
-          CHANGED_FILES=\\$(git diff --name-only \$PREVIOUS \$CURRENT)
+          # PREVIOUS=\$(git rev-parse HEAD~1)
+          # CURRENT=\$(git rev-parse HEAD)
+          CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r $(git rev-parse HEAD))
 
           echo "🔄 변경된 파일 목록:"
           echo "\$CHANGED_FILES" | sed 's/^/📁 /'
