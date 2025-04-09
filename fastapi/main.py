@@ -8,7 +8,7 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()  # .env 파일에서 OPENAI_API_KEY 로드
-openai.api_key = os.getenv("OPENAI_API_KEY")
+client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 class PromptRequest(BaseModel):
     prompt: str
