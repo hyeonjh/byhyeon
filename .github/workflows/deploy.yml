@@ -20,7 +20,7 @@ jobs:
         run: |
           echo "$PRIVATE_KEY" > id_rsa
           chmod 600 id_rsa
-          eval $(ssh-agent -s)
+          eval "$(ssh-agent -s)"
           ssh-add id_rsa
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
