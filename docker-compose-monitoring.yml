@@ -38,3 +38,4 @@ services:
 volumes:
   prometheus_data:
   grafana_data:
+# test1: 자동 재시작 트리거 테스트
