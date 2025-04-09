@@ -13,8 +13,6 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 class PromptRequest(BaseModel):
     prompt: str
 
-
-
 app = FastAPI()  # ⛔ root_path 생략 또는 제거
 
 @app.get("/", response_class=HTMLResponse)
@@ -53,12 +51,15 @@ def read_root():
 
 @app.post("/ask")
 def ask_gpt(request: PromptRequest):
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "너는 음성 파일 처리를 도와주는 AI야."},
-            {"role": "user", "content": request.prompt}
-        ]
-    )
-    gpt_reply = response["choices"][0]["message"]["content"]
-    return {"reply": gpt_reply}
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "너는 음성 파일 처리를 도와주는 AI야."},
+                {"role": "user", "content": request.prompt}
+            ]
+        )
+        gpt_reply = response["choices"][0]["message"]["content"]
+        return {"reply": gpt_reply}
+    except Exception as e:
+        return {"error": str(e)}
