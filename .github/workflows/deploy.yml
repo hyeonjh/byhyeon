@@ -34,10 +34,10 @@ jobs:
           git pull origin main
 
           # 안전하게 현재 커밋 기준으로만 변경된 파일 확인
-          CHANGED_FILES=\$(git diff-tree --no-commit-id --name-only -r \$(git rev-parse HEAD))
+          CHANGED_FILES=\$(git diff --name-only origin/main@{1} origin/main)
 
           echo "🔄 변경된 파일 목록:"
-          echo "\$CHANGED_FILES" | sed 's/^/📁 /'
+          echo "$CHANGED_FILES" | sed '/^$/d' | sed 's/^/📁 /'
 
           if echo "\$CHANGED_FILES" | grep -qE '^fastapi/|docker-compose-fastapi.yml'; then
             echo '▶️ FastAPI 변경 감지 → 재빌드 및 재시작'
