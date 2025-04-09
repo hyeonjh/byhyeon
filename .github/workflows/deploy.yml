@@ -41,17 +41,17 @@ jobs:
           echo "🔄 변경된 파일 목록:"
           echo "\$CHANGED_FILES" | sed 's/^/📁 /'
 
-          if echo "$CHANGED_FILES" | grep -qE '^fastapi/|docker-compose-fastapi.yml'; then
+          if echo "\$CHANGED_FILES" | grep -qE '^fastapi/|docker-compose-fastapi.yml'; then
             echo '▶️ FastAPI 변경 감지 → 재빌드 및 재시작'
             docker compose -f docker-compose-fastapi.yml up --build --force-recreate -d fastapi
           fi
 
-          if echo "$CHANGED_FILES" | grep -qE '^airflow/|docker-compose-airflow.yml'; then
+          if echo "\$CHANGED_FILES" | grep -qE '^airflow/|docker-compose-airflow.yml'; then
             echo '▶️ Airflow 변경 감지 → 재빌드 및 재시작'
             docker compose -f docker-compose-airflow.yml up --build --force-recreate -d airflow-webserver airflow-scheduler
           fi
 
-          if echo "$CHANGED_FILES" | grep -qE '^monitoring/|docker-compose-monitoring.yml'; then
+          if echo "\$CHANGED_FILES" | grep -qE '^monitoring/|docker-compose-monitoring.yml'; then
             echo '▶️ Monitoring 변경 감지 → 재빌드 및 재시작'
             docker compose -f docker-compose-monitoring.yml up --build --force-recreate -d grafana prometheus cadvisor
           fi
