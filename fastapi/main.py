@@ -48,18 +48,17 @@ def read_root():
         </body>
     </html>
     """
-
 @app.post("/ask")
 def ask_gpt(request: PromptRequest):
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "너는 음성 파일 처리를 도와주는 AI야."},
+                {"role": "system", "content": "너는 파일 처리 도우미야."},
                 {"role": "user", "content": request.prompt}
             ]
         )
-        gpt_reply = response["choices"][0]["message"]["content"]
+        gpt_reply = response.choices[0].message.content
         return {"reply": gpt_reply}
     except Exception as e:
         return {"error": str(e)}
