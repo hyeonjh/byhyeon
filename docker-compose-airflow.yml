@@ -88,4 +88,4 @@ networks:
     external: true
 
 
-# test2: 자동 재시작 트리거 테스트
+# test3: 자동 재시작 트리거 테스트
