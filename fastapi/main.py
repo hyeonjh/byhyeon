@@ -20,7 +20,7 @@ def read_root():
     return """
     <html>
         <head>
-            <title>Monitoring Dashboard</title>
+            <title>Monitoring + GPT</title>
             <style>
                 body { font-family: Arial; text-align: center; padding-top: 50px; background-color: #f5f5f5; }
                 h1 { color: #333; }
@@ -37,6 +37,31 @@ def read_root():
                 a.button:hover {
                     background-color: #0056b3;
                 }
+                #gpt-box {
+                    margin-top: 40px;
+                    padding: 20px;
+                    background-color: #ffffff;
+                    border-radius: 10px;
+                    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                    width: 500px;
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+                input[type="text"] {
+                    width: 80%;
+                    padding: 10px;
+                    font-size: 16px;
+                }
+                button {
+                    padding: 10px 20px;
+                    font-size: 16px;
+                    margin-left: 10px;
+                }
+                #response {
+                    margin-top: 20px;
+                    white-space: pre-wrap;
+                    color: #333;
+                }
             </style>
         </head>
         <body>
@@ -45,32 +70,20 @@ def read_root():
             <a class="button" href="https://prometheus.byhyeon.com" target="_blank">Prometheus</a>
             <a class="button" href="https://cadvisor.byhyeon.com" target="_blank">cAdvisor</a>
             <a class="button" href="https://airflow.byhyeon.com" target="_blank">Airflow</a>
-             <br/><br/>
-            <a class="button" href="/chat">💬 GPT 대화하기</a>
-        </body>
-    </html>
-    """
 
-# GPT 프롬프트 입력용 /chat 페이지
-@app.get("/chat", response_class=HTMLResponse)
-def chat_ui():
-    return """
-    <html>
-        <head><title>GPT Chat</title></head>
-        <body style="text-align: center; font-family: Arial; padding-top: 50px;">
-            <h1>💬 GPT에게 질문하기</h1>
-            <form onsubmit="event.preventDefault(); askGPT();">
-                <input type="text" id="prompt" placeholder="질문을 입력하세요" style="width: 300px; padding: 8px;" />
-                <button type="submit" style="padding: 8px 16px;">전송</button>
-            </form>
-            <div style="margin-top: 20px;">
-                <strong>응답:</strong>
-                <p id="response" style="white-space: pre-wrap;"></p>
+            <div id="gpt-box">
+                <h2>💬 GPT에게 바로 질문하기</h2>
+                <form onsubmit="event.preventDefault(); askGPT();">
+                    <input type="text" id="prompt" placeholder="질문을 입력하세요" />
+                    <button type="submit">전송</button>
+                </form>
+                <div id="response"></div>
             </div>
+
             <script>
                 async function askGPT() {
                     const prompt = document.getElementById("prompt").value;
-                    document.getElementById("response").innerText = "로딩 중...";
+                    document.getElementById("response").innerText = "GPT 응답 중...";
                     const response = await fetch("/ask", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
