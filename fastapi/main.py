@@ -45,9 +45,45 @@ def read_root():
             <a class="button" href="https://prometheus.byhyeon.com" target="_blank">Prometheus</a>
             <a class="button" href="https://cadvisor.byhyeon.com" target="_blank">cAdvisor</a>
             <a class="button" href="https://airflow.byhyeon.com" target="_blank">Airflow</a>
+             <br/><br/>
+            <a class="button" href="/chat">💬 GPT 대화하기</a>
         </body>
     </html>
     """
+
+# GPT 프롬프트 입력용 /chat 페이지
+@app.get("/chat", response_class=HTMLResponse)
+def chat_ui():
+    return """
+    <html>
+        <head><title>GPT Chat</title></head>
+        <body style="text-align: center; font-family: Arial; padding-top: 50px;">
+            <h1>💬 GPT에게 질문하기</h1>
+            <form onsubmit="event.preventDefault(); askGPT();">
+                <input type="text" id="prompt" placeholder="질문을 입력하세요" style="width: 300px; padding: 8px;" />
+                <button type="submit" style="padding: 8px 16px;">전송</button>
+            </form>
+            <div style="margin-top: 20px;">
+                <strong>응답:</strong>
+                <p id="response" style="white-space: pre-wrap;"></p>
+            </div>
+            <script>
+                async function askGPT() {
+                    const prompt = document.getElementById("prompt").value;
+                    document.getElementById("response").innerText = "로딩 중...";
+                    const response = await fetch("/ask", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ prompt })
+                    });
+                    const data = await response.json();
+                    document.getElementById("response").innerText = data.reply || data.error;
+                }
+            </script>
+        </body>
+    </html>
+    """
+
 @app.post("/ask")
 def ask_gpt(request: PromptRequest):
     try:
@@ -57,8 +93,8 @@ def ask_gpt(request: PromptRequest):
                 {"role": "system", "content": "너는 파일 처리 도우미야."},
                 {"role": "user", "content": request.prompt}
             ]
-        )
+        ) 
         gpt_reply = response.choices[0].message.content
         return {"reply": gpt_reply}
     except Exception as e:
-        return {"error": str(e)}
+        return {"error": str(e)} 
