@@ -8,7 +8,9 @@ services:
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
-    restart: unless-stopped
+    restart: always
+    networks:
+      - shared
 
   grafana:
     image: grafana/grafana:latest
@@ -19,7 +21,9 @@ services:
       - GF_SERVER_ROOT_URL=${GRAFANA_ROOT_URL}
     volumes:
       - grafana_data:/var/lib/grafana
-    restart: unless-stopped
+    restart: always
+    networks:
+      - shared
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
@@ -31,11 +35,17 @@ services:
       - /var/run:/var/run:rw
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
-    restart: unless-stopped
-
-  
+    restart: always
+    networks:
+      - shared
 
 volumes:
   prometheus_data:
   grafana_data:
+
+networks:
+  shared:
+    external: true
 # test3: 자동 재시작 트리거 테스트
+
+
