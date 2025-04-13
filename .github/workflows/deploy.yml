@@ -53,6 +53,11 @@ jobs:
             echo '▶️ Monitoring 변경 감지 → 재빌드 및 재시작'
             docker compose -f docker-compose-monitoring.yml up --build --force-recreate -d grafana prometheus cadvisor
           fi
+          
+          if echo "$CHANGED_FILES" | grep -qE '^filebeat/|^docker-compose-elk.yml$'; then
+            echo '📦 ELK 변경 감지 → 재시작'
+            docker compose -f docker-compose-elk.yml up --build --force-recreate -d elasticsearch kibana filebeat
+          fi
           EOF
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
