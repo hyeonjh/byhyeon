@@ -70,6 +70,7 @@ def read_root():
             <a class="button" href="https://prometheus.byhyeon.com" target="_blank">Prometheus</a>
             <a class="button" href="https://cadvisor.byhyeon.com" target="_blank">cAdvisor</a>
             <a class="button" href="https://airflow.byhyeon.com" target="_blank">Airflow</a>
+            <a class="button" href="https://kibana.byhyeon.com/app/home#/" target="_blank">Kibana</a>
 
             <div id="gpt-box">
                 <h2>💬 GPT에게 바로 질문하기</h2>
