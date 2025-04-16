@@ -7,6 +7,10 @@ import os
 from dotenv import load_dotenv
 import boto3
 
+
+# 로그설정
+from logs import logger
+
 load_dotenv()  # .env 파일에서 OPENAI_API_KEY 로드
 client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -127,10 +131,15 @@ def ask_gpt(request: PromptRequest):
 
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
-    content = await file.read()
-    s3.upload_fileobj(
-        Fileobj=content,
-        Bucket=bucket_name,
-        Key=file.filename
-    )
-    return {"filename": file.filename, "status": "uploaded"}
+    try:
+        logger.info(f"📦 수신된 파일: {file.filename}")
+        s3.upload_fileobj(
+            file.file,
+            Bucket=bucket_name,
+            Key=file.filename
+        )
+        logger.info(f"✅ S3 업로드 성공: {file.filename}")
+        return {"filename": file.filename, "status": "uploaded"}
+    except Exception as e:
+        logger.error(f"❌ 업로드 실패: {e}")
+        return {"error": str(e)}
