@@ -1,14 +1,25 @@
 # ✅ 수정된 FastAPI 코드
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import HTMLResponse
-
 from pydantic import BaseModel
 import openai
 import os
 from dotenv import load_dotenv
+import boto3
 
 load_dotenv()  # .env 파일에서 OPENAI_API_KEY 로드
 client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+s3 = boto3.client(
+    "s3",
+    aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+    aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+    region_name=os.getenv("AWS_REGION")
+)
+bucket_name = os.getenv("S3_BUCKET_NAME")
+
+
+
 
 class PromptRequest(BaseModel):
     prompt: str
@@ -112,3 +123,14 @@ def ask_gpt(request: PromptRequest):
         return {"reply": gpt_reply}
     except Exception as e:
         return {"error": str(e)} 
+    
+
+@app.post("/upload")
+async def upload_file(file: UploadFile = File(...)):
+    content = await file.read()
+    s3.upload_fileobj(
+        Fileobj=content,
+        Bucket=bucket_name,
+        Key=file.filename
+    )
+    return {"filename": file.filename, "status": "uploaded"}
