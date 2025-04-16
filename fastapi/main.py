@@ -9,7 +9,7 @@ import boto3
 
 
 # 로그설정
-from logs import logger
+from logs.logs import logger
 
 load_dotenv()  # .env 파일에서 OPENAI_API_KEY 로드
 client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
