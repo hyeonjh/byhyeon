@@ -10,3 +10,6 @@ boto3
 
 # openai 연동
 openai
+
+#db 연동
+psycopg2-binary

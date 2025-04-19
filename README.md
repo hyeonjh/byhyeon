@@ -53,18 +53,6 @@
 
 ---
 
-## 📂 프로젝트 구조
-
-```
-voice-clone/
-├── airflow/                  # Airflow DAG 및 스크립트
-├── fastapi/                  # FastAPI 메인 애플리케이션
-├── monitoring/               # Prometheus, Grafana, cAdvisor 구성
-├── docker-compose-airflow.yml
-├── docker-compose-fastapi.yml
-├── docker-compose-monitoring.yml
-└── setup.sh                  # 초기 설정 스크립트
-```
 
 ---
 
@@ -94,19 +82,5 @@ voice-clone/
 
 ## 📈 향후 개선사항
 
-- Kafka, Spark 연동을 통한 데이터 처리 확장
-- ELK 스택을 활용한 고급 로그 분석
-
----
-
-## 🚨 문제 해결 방법
-
-- Nginx 로그 (`/var/log/nginx/error.log`) 및 Docker 컨테이너 로그 (`docker logs [container-name]`) 참고
-
----
-
-## 📬 문의 사항
-
-문제 발생 또는 지원이 필요한 경우 [jhoon3697@gmail.com]으로 연락주세요.
 
 ---
