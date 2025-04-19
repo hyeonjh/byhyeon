@@ -5,8 +5,8 @@ SELECT current_user;
 
 
 -- 슈퍼유저인지확인 
-SELECT usesuper FROM pg_user WHERE usename = 'hyeonjh'
+SELECT usesuper FROM pg_user WHERE usename = 'meta_user'
 
 -- 특정 계정의 권한 확인
 
-SELECT * FROM pg_roles WHERE rolname = 'hyeonjh';
+SELECT * FROM pg_roles WHERE rolname = 'meta_user';
