@@ -1,5 +1,3 @@
-
-
 -- 현재유저확인
 SELECT current_user;
 

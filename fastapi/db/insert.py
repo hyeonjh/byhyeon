@@ -70,18 +70,10 @@ def insert_row(table_name: str, data):
         conn.commit()
         logger.info(f"✅ Insert 성공: {table_name} ({'bulk' if isinstance(data, list) else 'single'})")
 
-    except psycopg2.IntegrityError as e:
-        conn.rollback()
-        if e.pgcode == "23505":  # UniqueViolation 위반코드
-            logger.warning("❌ 중복된 파일: checksum UNIQUE 제약에 걸림")
-            raise ValueError("중복된 파일입니다. checksum이 이미 존재합니다.")
-        else:
-            logger.error(f"❌ DB IntegrityError: {e}", exc_info=True)
-            raise
-
     except Exception as e:
         logger.error(f"❌ insert 실패: {e}", exc_info=True)
         raise
+
     finally:
         if cur:
             cur.close()
