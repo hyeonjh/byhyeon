@@ -142,28 +142,34 @@ def read_root():
                     });
 
                     const result = await res.json();
+                    const messages = [];
 
-                    // ✅ 결과 파싱
-                    const parsedResults = result.files.map(fileObj => {
+                    for (const fileObj of result.files) {
                         const filename = Object.keys(fileObj)[0];
                         const data = fileObj[filename];
 
-                        // body 필드가 JSON 문자열일 경우 파싱 시도
-                        if (typeof data.body === "string") {
+                        let message = `✅ ${filename} 업로드 성공`;
+
+                        if (data.body) {
                             try {
                                 const parsedBody = JSON.parse(data.body);
-                                data.body = parsedBody;  // 덮어씀
+                                if (parsedBody.error) {
+                                    message = `❌ ${filename}: ${parsedBody.error}`;
+                                }
                             } catch (e) {
-                                // body가 JSON이 아닐 경우 무시
+                                // body 파싱 실패 시 무시
                             }
                         }
 
-                        return { [filename]: data };
-                    });
+                        if (data.status_code >= 400) {
+                            message = `❌ ${filename}: 업로드 실패`;
+                        }
 
-                    // ✅ 화면에 출력
-                    document.getElementById("upload-result").innerText =
-                        JSON.stringify({ files: parsedResults }, null, 2);
+                        messages.push(message);
+                    }
+
+                    // ✅ 결과 메시지 출력
+                    document.getElementById("upload-result").innerText = messages.join("\n");
                 }
             </script>
 
