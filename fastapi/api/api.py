@@ -2,7 +2,7 @@ from fastapi import APIRouter, UploadFile, File
 from fastapi.responses import JSONResponse ,HTMLResponse
 from pydantic import BaseModel
 from services.service import handle_upload, handle_gpt
-from typing import Union, List
+from typing import List
 
 router = APIRouter()
 
@@ -13,19 +13,13 @@ class PromptRequest(BaseModel):
 def ask_gpt(request: PromptRequest):
     return handle_gpt(request)
 
-@router.post("/upload") 
-async def upload(file: Union[UploadFile, List[UploadFile]] = File(...)):
+@router.post("/upload")
+async def upload(files: List[UploadFile] = File(...)):
     results = []
-
-    if isinstance(file, list):
-        for f in file:
-            result = await handle_upload(f)
-            results.append({f.filename: result})
-        return {"files": results}
-    
-    else:
+    for file in files:
         result = await handle_upload(file)
-        return {"file": {file.filename: result}}
+        results.append({file.filename: result})
+    return {"files": results}
 
 @router.get("/", response_class=HTMLResponse)
 def read_root():

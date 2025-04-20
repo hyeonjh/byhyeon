@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 from logs.logs import logger
 from db.insert import insert_row
 
-from utils.s3 import get_s3_client, get_s3_bucket_name
+from utils.s3 import get_s3_client, get_s3_bucket_name, upload_file_to_s3
 
 s3 = get_s3_client()
 bucket_name = get_s3_bucket_name()
@@ -22,6 +22,10 @@ bucket_name = get_s3_bucket_name()
 load_dotenv()  # .env 파일에서 OPENAI_API_KEY 로드
 
 client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+ALLOWED_EXTENSIONS = (".wav", ".mp3", ".m4a")
+MAX_FILE_SIZE_MB = 50
+MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024
 
 def handle_gpt(request):
     try:
@@ -41,26 +45,34 @@ async def handle_upload(file: UploadFile):
     try:
         logger.info(f"📦 수신된 파일: {file.filename}")
 
-        if not file.filename.lower().endswith((".wav", ".mp3", ".m4a")):
+        # 확장자 검사
+        if not file.filename.lower().endswith(ALLOWED_EXTENSIONS):
             logger.warning("⛔ 지원하지 않는 파일 확장자")
             return JSONResponse(
                 status_code=400,
-                content={"error": "지원하지 않는 파일 형식입니다."}
+                content={"error": f"지원하지 않는 파일 형식입니다. 허용: {ALLOWED_EXTENSIONS}"}
+            )
+        
+        # 파일 크기 검사 (seek → tell)
+        await file.seek(0, 2)  # EOF로 이동
+        file_size = file.file.tell()
+        await file.seek(0)  # 다시 처음으로
+
+        if file_size > MAX_FILE_SIZE:
+            logger.warning(f"⛔ 파일 용량 초과: {file.filename} ({file_size} bytes)")
+            return JSONResponse(
+                status_code=413,
+                content={"error": f"{MAX_FILE_SIZE_MB}MB 이하 파일만 업로드 가능합니다."}
             )
 
         upload_uuid = uuid.uuid4()
 
-        #  # ✅ 체크섬 먼저 계산
+        # 체크섬 먼저 계산
         # hasher = hashlib.md5()
         # while chunk := await file.read(8192):
         #     hasher.update(chunk)
         # checksum = hasher.hexdigest()
         # await file.seek(0)
-
-        # ✅ DB insert 먼저 시도
-        s3_folder = "uploads/"
-        s3_filename = f"{upload_uuid}_{file.filename}"
-        s3_key = f"{s3_folder}{s3_filename}"
 
         insert_row("metadata.s3_file_metadata", {
             "upload_uuid": str(upload_uuid),
@@ -72,12 +84,11 @@ async def handle_upload(file: UploadFile):
             # "checksum": checksum
         })
 
-        # ✅ insert 성공했으면 → S3 업로드
-        s3.upload_fileobj(
-            Fileobj=file.file,
-            Bucket=bucket_name,
-            Key=s3_key
-        )
+        # S3 업로드 
+        s3_folder = "uploads/"
+        s3_filename = f"{upload_uuid}_{file.filename}"
+        s3_key = f"{s3_folder}{s3_filename}"
+        upload_file_to_s3(file.file, s3_key)
         logger.info(f"✅ S3 업로드 성공: {s3_filename}")
 
         return {
