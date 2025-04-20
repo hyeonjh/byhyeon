@@ -161,7 +161,7 @@ def read_root():
                             }
                         }
 
-                        if (data.status_code >= 400) {
+                        if (!message && data.status_code >= 400) {
                             message = `❌ ${filename}: 업로드 실패`;
                         }
 
