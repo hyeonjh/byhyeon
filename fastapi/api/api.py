@@ -169,7 +169,7 @@ def read_root():
                     }
 
                     // ✅ 결과 메시지 출력
-                    document.getElementById("upload-result").innerText = messages.join("<br>");
+                    document.getElementById("upload-result").innerHTML = messages.join("<br>");
                 }
             </script>
 
