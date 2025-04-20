@@ -6,7 +6,6 @@ from fastapi.responses import JSONResponse
 import openai
 import boto3
 import uuid
-import hashlib
 import os
 
 # 내부 유틸 / 환경
@@ -50,12 +49,12 @@ async def handle_upload(file: UploadFile):
 
         upload_uuid = uuid.uuid4()
 
-         # ✅ 체크섬 먼저 계산
-        hasher = hashlib.md5()
-        while chunk := await file.read(8192):
-            hasher.update(chunk)
-        checksum = hasher.hexdigest()
-        await file.seek(0)
+        #  # ✅ 체크섬 먼저 계산
+        # hasher = hashlib.md5()
+        # while chunk := await file.read(8192):
+        #     hasher.update(chunk)
+        # checksum = hasher.hexdigest()
+        # await file.seek(0)
 
         # ✅ DB insert 먼저 시도
         s3_folder = "uploads/"
@@ -69,7 +68,7 @@ async def handle_upload(file: UploadFile):
             "s3_filename": s3_filename,
             "file_size": file.size,
             "file_type": file.content_type,
-            "checksum": checksum
+            # "checksum": checksum
         })
 
         # ✅ insert 성공했으면 → S3 업로드
@@ -85,16 +84,16 @@ async def handle_upload(file: UploadFile):
             "status": "uploaded"
         }
 
-    except ValueError as ve:
-        if "중복된 파일입니다" in str(ve):
-            logger.warning(f"⛔ 중복 업로드 차단: {file.filename}")
-            return JSONResponse(
-                status_code=409,
-                content={"status": "duplicate", "detail": str(ve)}
-            )
-        else:
-            logger.error(f"❌ 처리 중 ValueError: {ve}", exc_info=True)
-            return {"error": str(ve)}
+    # except ValueError as ve:
+    #     if "중복된 파일입니다" in str(ve):
+    #         logger.warning(f"⛔ 중복 업로드 차단: {file.filename}")
+    #         return JSONResponse(
+    #             status_code=409,
+    #             content={"status": "duplicate", "detail": str(ve)}
+    #         )
+    #     else:
+    #         logger.error(f"❌ 처리 중 ValueError: {ve}", exc_info=True)
+    #         return {"error": str(ve)}
 
     except Exception as e:
         logger.error(f"❌ 업로드 실패: {e}", exc_info=True)
