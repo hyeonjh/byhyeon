@@ -73,6 +73,11 @@ async def handle_upload(file: UploadFile):
         # checksum = hasher.hexdigest()
         # await file.seek(0)
 
+        # S3 업로드 
+        s3_folder = "uploads/"
+        s3_filename = f"{upload_uuid}_{file.filename}"
+        s3_key = f"{s3_folder}{s3_filename}"
+        
         insert_row("metadata.s3_file_metadata", {
             "upload_uuid": str(upload_uuid),
             "original_filename": file.filename,
@@ -83,10 +88,6 @@ async def handle_upload(file: UploadFile):
             # "checksum": checksum
         })
 
-        # S3 업로드 
-        s3_folder = "uploads/"
-        s3_filename = f"{upload_uuid}_{file.filename}"
-        s3_key = f"{s3_folder}{s3_filename}"
         upload_file_to_s3(file.file, s3_key)
         logger.info(f"✅ S3 업로드 성공: {s3_filename}")
 
