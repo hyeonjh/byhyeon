@@ -87,19 +87,68 @@ def read_root():
                 <div id="response"></div>
             </div>
 
+            <hr style="margin: 40px 0;">
+
+            <h2>💬 GPT에게 업로드 여부 묻기</h2>
+            <form onsubmit="event.preventDefault(); askGPT();">
+                <input type="text" id="prompt" placeholder="GPT에게 질문" />
+                <button type="submit">질문 보내기</button>
+            </form>
+
+            <input type="file" id="uploadInput" multiple />
+            <div id="response" style="margin-top:10px;"></div>
+            <div id="upload-result" style="margin-top:20px; white-space: pre-wrap;"></div>
+
             <script>
                 async function askGPT() {
                     const prompt = document.getElementById("prompt").value;
+                    const files = document.getElementById("uploadInput").files;
+                    const fileNames = Array.from(files).map(f => f.name).join(", ");
+                    const fullPrompt = `${prompt}\n파일 목록: ${fileNames}`;
+
                     document.getElementById("response").innerText = "GPT 응답 중...";
+
                     const response = await fetch("/ask", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ prompt })
+                        body: JSON.stringify({ prompt: fullPrompt })
                     });
+
                     const data = await response.json();
-                    document.getElementById("response").innerText = data.reply || data.error;
+                    const reply = data.reply || data.error;
+                    document.getElementById("response").innerText = reply;
+
+                    // ✅ GPT가 업로드 허용한 경우 자동 업로드 실행
+                    if (reply.includes("업로드") && reply.includes("하세요")) {
+                        uploadFiles();
+                    }
+                }
+
+                async function uploadFiles() {
+                    const input = document.getElementById("uploadInput");
+                    const files = input.files;
+
+                    if (!files.length) {
+                        alert("업로드할 파일이 없습니다.");
+                        return;
+                    }
+
+                    const formData = new FormData();
+                    for (let i = 0; i < files.length; i++) {
+                        formData.append("files", files[i]);
+                    }
+
+                    const res = await fetch("/upload", {
+                        method: "POST",
+                        body: formData
+                    });
+
+                    const result = await res.json();
+                    document.getElementById("upload-result").innerText = JSON.stringify(result, null, 2);
                 }
             </script>
+
+
         </body>
     </html>
     """
