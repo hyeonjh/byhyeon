@@ -52,11 +52,10 @@ async def handle_upload(file: UploadFile):
                 status_code=400,
                 content={"error": f"지원하지 않는 파일 형식입니다. 허용: {ALLOWED_EXTENSIONS}"}
             )
-        
-        # 파일 크기 검사 (seek → tell)
-        await file.seek(0, 2)  # EOF로 이동
+        # 파일 크기 체크
+        file.file.seek(0, 2)  # EOF로 이동
         file_size = file.file.tell()
-        await file.seek(0)  # 다시 처음으로
+        file.file.seek(0)  # 다시 처음으로
 
         if file_size > MAX_FILE_SIZE:
             logger.warning(f"⛔ 파일 용량 초과: {file.filename} ({file_size} bytes)")
