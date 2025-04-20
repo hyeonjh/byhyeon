@@ -50,22 +50,17 @@ async def handle_upload(file: UploadFile):
 
         upload_uuid = uuid.uuid4()
 
+         # ✅ 체크섬 먼저 계산
         hasher = hashlib.md5()
         while chunk := await file.read(8192):
             hasher.update(chunk)
         checksum = hasher.hexdigest()
         await file.seek(0)
 
+        # ✅ DB insert 먼저 시도
         s3_folder = "uploads/"
         s3_filename = f"{upload_uuid}_{file.filename}"
         s3_key = f"{s3_folder}{s3_filename}"
-
-        s3.upload_fileobj(
-            Fileobj=file.file,
-            Bucket=bucket_name,
-            Key=s3_key
-        )
-        logger.info(f"✅ S3 업로드 성공: {s3_filename}")
 
         insert_row("metadata.s3_file_metadata", {
             "upload_uuid": str(upload_uuid),
@@ -76,6 +71,14 @@ async def handle_upload(file: UploadFile):
             "file_type": file.content_type,
             "checksum": checksum
         })
+
+        # ✅ insert 성공했으면 → S3 업로드
+        s3.upload_fileobj(
+            Fileobj=file.file,
+            Bucket=bucket_name,
+            Key=s3_key
+        )
+        logger.info(f"✅ S3 업로드 성공: {s3_filename}")
 
         return {
             "upload_uuid": str(upload_uuid),
