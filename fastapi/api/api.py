@@ -142,7 +142,28 @@ def read_root():
                     });
 
                     const result = await res.json();
-                    document.getElementById("upload-result").innerText = JSON.stringify(result, null, 2);
+
+                    // ✅ 결과 파싱
+                    const parsedResults = result.files.map(fileObj => {
+                        const filename = Object.keys(fileObj)[0];
+                        const data = fileObj[filename];
+
+                        // body 필드가 JSON 문자열일 경우 파싱 시도
+                        if (typeof data.body === "string") {
+                            try {
+                                const parsedBody = JSON.parse(data.body);
+                                data.body = parsedBody;  // 덮어씀
+                            } catch (e) {
+                                // body가 JSON이 아닐 경우 무시
+                            }
+                        }
+
+                        return { [filename]: data };
+                    });
+
+                    // ✅ 화면에 출력
+                    document.getElementById("upload-result").innerText =
+                        JSON.stringify({ files: parsedResults }, null, 2);
                 }
             </script>
 
