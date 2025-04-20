@@ -2,6 +2,7 @@
 from fastapi import UploadFile, File
 from fastapi.responses import JSONResponse
 
+
 # 기타 외부 패키지
 import openai
 import boto3
