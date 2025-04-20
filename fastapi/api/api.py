@@ -78,15 +78,6 @@ def read_root():
             <a class="button" href="https://airflow.byhyeon.com" target="_blank">Airflow</a>
             <a class="button" href="https://kibana.byhyeon.com/app/home#/" target="_blank">Kibana</a>
 
-            <div id="gpt-box">
-                <h2>💬 GPT에게 바로 질문하기</h2>
-                <form onsubmit="event.preventDefault(); askGPT();">
-                    <input type="text" id="prompt" placeholder="질문을 입력하세요" />
-                    <button type="submit">전송</button>
-                </form>
-                <div id="response"></div>
-            </div>
-
             <hr style="margin: 40px 0;">
 
             <h2>💬 GPT에게 업로드 여부 묻기</h2>
@@ -104,7 +95,14 @@ def read_root():
                     const prompt = document.getElementById("prompt").value;
                     const files = document.getElementById("uploadInput").files;
                     const fileNames = Array.from(files).map(f => f.name).join(", ");
-                    const fullPrompt = `${prompt}\n파일 목록: ${fileNames}`;
+                    const fullPrompt = `
+                    당신은 파일 업로드 여부를 판단하는 AI입니다.
+                    파일 목록을 분석하여 업로드가 필요한 경우에는 "업로드하세요",
+                    필요하지 않은 경우에는 "업로드하지 마세요" 라고만 답하세요.
+                    그 외의 말은 하지 마세요.
+
+                    파일 목록: ${fileNames}
+                    `;
 
                     document.getElementById("response").innerText = "GPT 응답 중...";
 
