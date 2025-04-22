@@ -80,6 +80,25 @@
 
 ---
 
+## 📡 방화벽 포트 구성 (부컴 / K3s Master)
+
+| 포트 | 프로토콜 | 설명 |
+|------|----------|-----------------------------|
+| 2222 | TCP      | SSH (기본 22에서 변경됨)   |
+| 6443 | TCP      | Kubernetes API Server (K3s) |
+| 8472 | UDP      | Flannel VXLAN Networking    |
+| 10250| TCP      | Kubelet API (노드 통신)     |
+| 80   | TCP      | Ingress Web (HTTP)          |
+| 443  | TCP      | Ingress Web (HTTPS)         |
+| 5432 | TCP      | PostgreSQL DB               |
+| 9100 | TCP      | Node Exporter (Prometheus)  |
+| 9090 | TCP      | Prometheus                  |
+| 3000 | TCP      | Grafana                     |
+| 8081 | TCP      | cAdvisor                    |
+
+> 🔒 기본 정책: `deny (incoming)` / `allow (outgoing)`  
+> ✅ 위 포트들은 모두 `ALLOW` 상태 (IPv4 + IPv6)
+
 ## 📈 향후 개선사항
 
 
