@@ -30,7 +30,7 @@ jobs:
           chmod 600 id_rsa
           ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << EOF
           set -e
-          cd ~/voice-clone
+          mkdir -p ~/byhyeon && cd ~/byhyeon
           git pull origin main
 
           # 안전하게 현재 커밋 기준으로만 변경된 파일 확인
@@ -39,9 +39,9 @@ jobs:
           echo "🔄 변경된 파일 목록:"
           echo "$CHANGED_FILES" | sed '/^$/d' | sed 's/^/📁 /'
 
-          if echo "\$CHANGED_FILES" | grep -qE '^fastapi/|docker-compose-fastapi.yaml'; then
-            echo '▶️ FastAPI 변경 감지 → 재빌드 및 재시작'
-            docker compose -f docker-compose-fastapi.yaml up --build --force-recreate -d fastapi
+          if echo "$CHANGED_FILES" | grep -qE '^k8s/fastapi/|^fastapi/'; then
+            echo '🚀 FastAPI Kubernetes 변경 감지 → kubectl apply'
+            kubectl apply -f ~/byhyeon/k8s/fastapi/
           fi
 
           if echo "\$CHANGED_FILES" | grep -qE '^airflow/|docker-compose-airflow.yaml'; then

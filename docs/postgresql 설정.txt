@@ -1,0 +1,28 @@
+postgresql 설정 수정
+
+1. 외부접속 허용
+sudo nano /etc/postgresql/16/main/postgresql.conf 
+listen_addresses = '*'
+
+2. 외부 ip 허용 추가
+sudo nano /etc/postgresql/16/main/pg_hba.conf
+host    all             all             192.168.0.12/32        scram-sha-256 
+
+
+3.  Airflow 컨테이너에서 host.docker.internal 사용
+sudo sh -c 'echo "172.17.0.1 host.docker.internal" >> /etc/hosts'
+
+3-1 pg_hba.conf에 도커 IP 대역 추가
+sudo nano /etc/postgresql/16/main/pg_hba.conf
+# Allow Docker subnet (172.16.0.0/12 covers most docker bridge networks)
+host    all             all             172.16.0.0/12          md5
+
+4 pgdb 연결 airflow.yml 설정
+
+#AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://****:****@host.docker.internal:5432/hyeonjhdb?sslmode=disable
+
+
+5. pgdb 재시작
+
+sudo systemctl restart postgresql@16-main
+

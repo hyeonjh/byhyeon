@@ -1,0 +1,50 @@
+Node Exporter 설치 (v1.8.0)
+
+
+
+1.  다운 및 설치
+
+cd /opt
+# 최신 안정 버전 다운로드 (v1.8.0)
+wget https://github.com/prometheus/node_exporter/releases/download/v1.8.0/node_exporter-1.8.0.linux-amd64.tar.gz
+# 압축 해제
+tar -xzf node_exporter-1.8.0.linux-amd64.tar.gz
+# 디렉토리 정리
+mv node_exporter-1.8.0.linux-amd64 node_exporter
+
+
+2. systemd 서비스 등록 
+sudo nano /etc/systemd/system/node_exporter.service
+
+2-1 내용
+[Unit]
+Description=Node Exporter
+After=network.target
+
+[Service]
+User=root
+ExecStart=/opt/node_exporter/node_exporter
+Restart=always
+
+[Install]
+WantedBy=default.target
+
+
+3. 서비스 등록 및 실행 
+
+# 시스템 서비스 리로드
+sudo systemctl daemon-reload
+
+# 부팅 시 자동 실행 등록
+sudo systemctl enable node_exporter
+
+# 서비스 시작
+sudo systemctl start node_exporter
+
+
+4. 포트 열기 (프로메테우스에서 접근)
+sudo ufw allow 9100/tcp
+
+5. 접속 확인
+
+curl http://192.168.0.13:9100/metrics 

@@ -2,7 +2,7 @@ services:
   airflow-webserver:
     build:
      context: ./airflow
-    image: voice-clone-airflow:latest
+    image: byhyeon-airflow:latest
     container_name: airflow-webserver
     # .env : AIRFLOW_UID
     user: "${AIRFLOW_UID}:0"   
@@ -48,7 +48,7 @@ services:
   airflow-scheduler:
     build:
      context: ./airflow 
-    image: voice-clone-airflow:latest
+    image: byhyeon-airflow:latest
     container_name: airflow-scheduler
     # .env : AIRFLOW_UID
     user: "${AIRFLOW_UID}:0"   
