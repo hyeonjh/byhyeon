@@ -1,0 +1,27 @@
+쿠버네티스 설정
+
+STEP 1: K3s 마스터 노드 설치 (부컴에서 실행)
+
+curl -sfL https://get.k3s.io | sh -
+
+
+k3s --version
+sudo k3s kubectl get nodes
+
+kubeconfig 권한 변경해서 일반 사용자도 접근 가능하게 만들기
+sudo chmod 644 /etc/rancher/k3s/k3s.yaml
+
+경변수로 kubectl 쓸 수 있게 설정:
+echo 'export KUBECONFIG=/etc/rancher/k3s/k3s.yaml' >> ~/.bashrc
+source ~/.bashrc
+
+부컴 토큰확인
+hyeonjh@hyeonjh:~$ sudo cat /var/lib/rancher/k3s/server/node-token
+
+helm 설치
+
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+helm 버전확인
+
+helm version

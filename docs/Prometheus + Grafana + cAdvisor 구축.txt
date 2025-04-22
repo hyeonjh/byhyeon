@@ -1,0 +1,98 @@
+[Node Exporter] ────┐
+[App Exporter]      	├─▶  [Prometheus]  ──▶  Grafana (시각화)
+[cAdvisor]     ─────┘
+
+
+Prometheus + Grafana + cAdvisor 구축
+
+
+1. 프로메테우스 구축
+
+
+1-1 디렉토리 구조 세팅
+mkdir -p ~/monitoring
+cd ~/monitoring
+touch docker-compose-monitor.yml
+touch prometheus.yml
+
+
+2-1 도커파일생성
+cd ~/voice-clone 
+docker-compose-monitoring.yml 도커파일생성
+
+###############파일내부#########
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    restart: unless-stopped
+
+volumes:
+  prometheus_data:
+
+
+2-2 프로메테우스 설정파일 생성
+
+cd ~/voice-clone/monitoring 폴더에 
+ prometheus.yml  생성
+  GNU nano 7.2                                   prometheus.yml                                             global:
+  scrape_interval: 10s
+
+scrape_configs:
+  - job_name: 'node_exporter'
+    static_configs:
+      - targets: ['host.docker.internal:9100']
+
+
+
+2-3 포트번호 열기
+
+sudo ufw status
+sudo ufw allow 9090/tcp
+
+
+2-4 웹ui 접속
+
+http://192.168.0.13:9090/
+
+
+3-1 grafana , cadvisor 추가 docker compose-monitoring.yml에
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    restart: unless-stopped
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports:
+      - "8081:8080"     # 포트 충돌 때문에 수정! (airflow가 8080 사용 중)
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+
+3-2 prometheus.yml 에  cadvisor 추가
+prometheus.yml
+
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080'] 
+
+
+3-3 외부포트추가
+
+
+sudo ufw allow 3000/tcp
+sudo ufw allow 8081/tcp
