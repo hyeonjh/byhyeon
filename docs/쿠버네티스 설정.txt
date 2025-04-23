@@ -25,3 +25,52 @@ curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 helm 버전확인
 
 helm version
+
+
+
+kubectl create secret generic aws-secret \
+  --from-literal=AWS_ACCESS_KEY_ID=<your-access-key-id> \
+  --from-literal=AWS_SECRET_ACCESS_KEY=<your-secret-access-key> \
+  --from-literal=AWS_REGION=ap-northeast-2 \
+  --from-literal=S3_BUCKET_NAME=<your-bucket-name>
+
+
+# .env 파일 기반으로 Secret 생성
+    kubectl create secret generic byhyeon-secret \
+    --from-env-file=./.env
+
+1. Secret 목록 보기
+  kubectl get secrets
+
+2. Secret 상세 정보(메타데이터) 
+kubectl describe secret db-secret
+
+3. Secret에 저장된 키 목록 및 인코딩된 값 확인
+kubectl get secret db-secret -o yaml
+
+
+
+권한설정 오류류
+
+hyeonjh@hyeonjh:~/byhyeon$ kubectl get secrets
+error: error loading config file "/etc/rancher/k3s/k3s.yaml": open /etc/rancher/k3s/k3s.yaml: permission denied
+
+kubeconfig 복사해서 내 홈 디렉터리로 옮기기
+# 1. .kube 디렉터리 생성
+mkdir -p ~/.kube
+
+# 2. root 권한으로 K3s kubeconfig 복사
+sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+
+# 3. 내 사용자 소유로 변경
+sudo chown $(id -u):$(id -g) ~/.kube/config
+
+# 4. (선택) 퍼미션 잠그기
+chmod 600 ~/.kube/config
+
+# 5. 확인
+kubectl get secrets
+
+# 6. 안되면 환경변수로 기본 kubeconfig 지정 (영구)
+echo 'export KUBECONFIG=$HOME/.kube/config' >> ~/.bashrc
+source ~/.bashrc

@@ -1,0 +1,48 @@
+1. 도커이미지 목록확인 
+docker images
+
+ 2. 실행 중인 도커 컨테이너 목록
+docker ps
+
+
+3. 전체 컨테이너 (종료 포함) 확인
+
+docker ps -a
+
+
+4. Docker 디스크 점유 상태 보기
+docker system df
+
+5. 컨테이너별 이미지 사용 개수 요약 (airflow 이미지 1개로 2컨테이너 사용)
+docker ps --format '{{.Image}}' | sort | uniq -c
+
+6. 안쓰는 이미지 전체삭제
+
+docker image prune -a -f
+
+
+7. 중지된 컨테이너 삭제
+docker container prune -f
+
+8. 안쓰는 볼륨 삭제
+
+docker volume prune -f
+
+9. 안쓰는 네트워크 삭제 
+
+docker network prune -f
+
+10. 빌드 캐시 삭제 (buildx 등)
+docker builder prune -a -f
+
+
+hyeonjh@hyeonjh:~$ docker images
+REPOSITORY                                      TAG       IMAGE ID       CREATED         SIZE
+voice-clone-fastapi                             latest    4cd2204a8b86   23 hours ago    193MB
+voice-clone-airflow                             latest    ff8ac064ddb3   2 weeks ago     1.83GB
+grafana/grafana                                 latest    5c42a1c2e40b   4 weeks ago     663MB
+prom/prometheus                                 latest    5173ced6b24a   5 weeks ago     271MB
+gcr.io/cadvisor/cadvisor                        latest    c02cf39d3dba   13 months ago   80.8MB
+docker.elastic.co/elasticsearch/elasticsearch   8.12.0    014ecd90309d   15 months ago   1.36GB
+docker.elastic.co/kibana/kibana                 8.12.0    918ae23c129e   15 months ago   1.05GB
+docker.elastic.co/beats/filebeat                8.12.0    c4d9492744b8   15 months ago   324MB
