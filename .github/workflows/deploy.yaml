@@ -16,6 +16,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # 1) AWS 자격증명 설정 (Secrets.AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION 필요)
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      # 2) ECR 로그인
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      # 3) FastAPI 이미지 빌드 & 푸시 (변경 감지 없이 항상)
+      - name: Build and push FastAPI image
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, 'fastapi')
+        uses: docker/build-push-action@v5
+        with:
+          context: ./fastapi
+          file: ./fastapi/Dockerfile
+          push: true
+          tags: ${{ steps.login-ecr.outputs.registry }}/byhyeon:fastapi-latest
+
       - name: Set up SSH
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > id_rsa

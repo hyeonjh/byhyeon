@@ -1,0 +1,78 @@
+ nginx 설정 
+
+1. 파일만들기 
+sudo nano /etc/nginx/sites-available/voice-clone
+
+2. 심볼릭 링크로 활성화 
+sudo ln -s /etc/nginx/sites-available/voice-clone /etc/nginx/sites-enabled/
+2-1 기존설정 꺼두기
+sudo rm /etc/nginx/sites-enabled/default
+
+2-2 문법검사(오류 있으면 절대 reload 하면 안 됨)
+sudo nginx -t
+2-3 로드
+sudo systemctl reload nginx
+2-4 nginx 설정확인
+sudo systemctl status nginx
+
+
+3. certbot 으로 ssl 발급
+sudo apt install certbot python3-certbot-nginx
+
+4. 인증서 발급 명령어
+
+sudo certbot --nginx -d byhyeon.com -d www.byhyeon.com -d hyeonjh.duckdns.org
+
+5. 인증서 경로 확인
+sudo ls /etc/letsencrypt/live/byhyeon.com
+
+6. 갱신 테스트 
+sudo certbot renew --dry-run
+
+7. 인증서 목록조회
+sudo certbot certificates
+
+########### nginx 폴더경로 이름변경
+
+# 이름 변경
+sudo mv /etc/nginx/sites-available/voice-clone /etc/nginx/sites-available/byhyeon
+
+# 심볼릭 링크도 재연결
+sudo ln -sf /etc/nginx/sites-available/byhyeon /etc/nginx/sites-enabled/byhyeon
+sudo nginx -t
+sudo systemctl reload nginx
+
+# 경로
+
+sudo nano /etc/nginx/sites-available/byhyeon
+
+####################################################### nginx 와 트래픽연동
+1.Service 타입을 NodePort로 변경
+
+kubectl apply -f k8s/fastapi/fastapi-service.yaml
+
+2. 방화벽에서 nodeport 열기
+
+sudo ufw allow 30080/tcp
+
+3. Nginx 설정에서 프록시 대상 변경
+location / {
+  proxy_pass http://127.0.0.1:30080/;
+  proxy_set_header Host $host;
+  proxy_set_header X-Real-IP $remote_addr;
+  …
+}
+
+
+# nginx 종료후 80 , 443 포트를 트래픽으로 사용
+sudo systemctl stop nginx
+
+sudo systemctl disable nginx
+
+
+
+# 1. Traefik 동작 확인
+kubectl get pods -n kube-system | grep traefik
+
+# 2. cert-manager + ClusterIssuer 세팅 (Let’s Encrypt 자동 발급용)
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.yaml
