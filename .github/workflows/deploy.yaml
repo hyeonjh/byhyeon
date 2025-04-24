@@ -48,19 +48,25 @@ jobs:
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Step 1 - Git Pull & Secret 갱신
+      - name: Step 1 - Git Pull & Set KUBECONFIG & Create ECR Secret
         run: |
           ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
           set -e
           cd ~/byhyeon
           git pull origin main
 
-          echo '🔐 ECR Secret 무조건 갱신 추후 변경 '
+          echo '📁 KUBECONFIG 권한 유지하면서 ~/.kube/config 세팅'
+          mkdir -p ~/.kube
+          sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+          sudo chown $(whoami) ~/.kube/config
+          export KUBECONFIG=\$HOME/.kube/config
+
+          echo '🔐 ECR Secret 생성 (무조건 갱신)'
           aws ecr get-login-password --region ap-northeast-2 | \
           kubectl create secret docker-registry ecr-registry \
             --docker-server=329599615061.dkr.ecr.ap-northeast-2.amazonaws.com \
             --docker-username=AWS \
-            --docker-password=$(aws ecr get-login-password) \
+            --docker-password=\$(aws ecr get-login-password) \
             --namespace=default \
             --dry-run=client -o yaml | kubectl apply -f -
           EOF
