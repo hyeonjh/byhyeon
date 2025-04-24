@@ -59,6 +59,7 @@ jobs:
           mkdir -p ~/.kube
           sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
           sudo chown $(whoami) ~/.kube/config
+          chmod 600 ~/.kube/config
 
           echo '🔐 ECR Secret 생성 - 무조건 갱신'
           aws ecr get-login-password --region ap-northeast-2 | \
