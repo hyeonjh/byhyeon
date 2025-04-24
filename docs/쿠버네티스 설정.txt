@@ -76,3 +76,28 @@ echo 'export KUBECONFIG=$HOME/.kube/config' >> ~/.bashrc
 source ~/.bashrc
 
 
+
+############################# 서비스 상태 확인
+
+1. Pod 상태 확인 (전체 네임스페이스)
+kubectl get pods -A
+
+2. 서비스 확인 (NodePort, ClusterIP 등 포함)
+kubectl get svc -A
+
+3. Helm으로 배포된 것 확인
+helm list -A
+
+4.Ingress 상태 보기
+kubectl get ingress -A
+
+5.네임스페이스별 리소스 분포
+kubectl get all -n default
+
+
+
+#### HELM 배포시 FASTAPI 삭제
+
+kubectl delete deploy fastapi -n default
+kubectl delete svc fastapi -n default
+kubectl delete ingress fastapi-ingress -n default  # 있으면
