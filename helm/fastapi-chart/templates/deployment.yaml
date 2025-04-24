@@ -10,11 +10,11 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Release.Name }}
+      app: {{ .Values.app }}
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}
+        app: {{ .Values.app }}
     spec:
       imagePullSecrets: #ecr-registry
         - name: {{ .Values.secrets.imagePullSecret }}
