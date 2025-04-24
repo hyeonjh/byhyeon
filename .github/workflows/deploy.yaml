@@ -48,44 +48,84 @@ jobs:
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy changed services
+      - name: Step 1 - Git Pull & Secret 갱신
         run: |
-          chmod 600 id_rsa
-          ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << EOF
+          ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
           set -e
-          mkdir -p ~/byhyeon && cd ~/byhyeon
+          cd ~/byhyeon
           git pull origin main
 
-          # 안전하게 현재 커밋 기준으로만 변경된 파일 확인
-          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+          echo '🔐 ECR Secret 무조건 갱신 추후 변경 '
+          aws ecr get-login-password --region ap-northeast-2 | \
+          kubectl create secret docker-registry ecr-registry \
+            --docker-server=329599615061.dkr.ecr.ap-northeast-2.amazonaws.com \
+            --docker-username=AWS \
+            --docker-password=$(aws ecr get-login-password) \
+            --namespace=default \
+            --dry-run=client -o yaml | kubectl apply -f -
+          EOF
 
-          echo "🔄 변경된 파일 목록:"
-          echo "$CHANGED_FILES" | sed '/^$/d' | sed 's/^/📁 /'
+      - name: Step 2 - FastAPI Helm 배포
+        run: |
+          ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+          set -e
+          cd ~/byhyeon
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
 
           if echo "$CHANGED_FILES" | grep -qE '^helm/fastapi-chart/|^fastapi/'; then
             echo '🚀 FastAPI Helm 차트 변경 감지 → helm upgrade 실행'
             helm upgrade --install fastapi ./helm/fastapi-chart -n default
           fi
-
-          if echo "\$CHANGED_FILES" | grep -qE '^airflow/|docker-compose-airflow.yaml'; then
-            echo '▶️ Airflow 변경 감지 → 재빌드 및 재시작'
-            docker compose -f docker-compose-airflow.yaml up --build --force-recreate -d airflow-webserver airflow-scheduler
-          fi
-
-          if echo "\$CHANGED_FILES" | grep -qE '^monitoring/|docker-compose-monitoring.yaml'; then
-            echo '▶️ Monitoring 변경 감지 → 재빌드 및 재시작'
-            docker compose -f docker-compose-monitoring.yaml up --build --force-recreate -d grafana prometheus cadvisor
-          fi
-          
-          if echo "$CHANGED_FILES" | grep -qE '^filebeat/|^docker-compose-elk.yaml$'; then
-            echo '📦 ELK 변경 감지 → 재시작'
-            docker compose -f docker-compose-elk.yaml up --force-recreate -d elasticsearch kibana filebeat
-          fi
           EOF
-        env:
-          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SERVER_IP: ${{ secrets.SERVER_IP }}
+
+#####################변경전 deploy 
+      # - name: Deploy changed services
+      #   run: |
+      #     chmod 600 id_rsa
+      #     ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << EOF
+      #     set -e
+      #     mkdir -p ~/byhyeon && cd ~/byhyeon
+      #     git pull origin main
+
+      #     echo '🔐 ECR Secret 무조건 갱신'
+      #     aws ecr get-login-password --region ap-northeast-2 | \
+      #     kubectl create secret docker-registry ecr-registry \
+      #       --docker-server=329599615061.dkr.ecr.ap-northeast-2.amazonaws.com \
+      #       --docker-username=AWS \
+      #       --docker-password=$(aws ecr get-login-password) \
+      #       --namespace=default \
+      #       --dry-run=client -o yaml | kubectl apply -f -
+
+      #     # 안전하게 현재 커밋 기준으로만 변경된 파일 확인
+      #     CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+
+      #     echo "🔄 변경된 파일 목록:"
+      #     echo "$CHANGED_FILES" | sed '/^$/d' | sed 's/^/📁 /'
+
+      #     if echo "$CHANGED_FILES" | grep -qE '^helm/fastapi-chart/|^fastapi/'; then
+      #       echo '🚀 FastAPI Helm 차트 변경 감지 → helm upgrade 실행'
+      #       helm upgrade --install fastapi ./helm/fastapi-chart -n default
+      #     fi
+
+      #     if echo "\$CHANGED_FILES" | grep -qE '^airflow/|docker-compose-airflow.yaml'; then
+      #       echo '▶️ Airflow 변경 감지 → 재빌드 및 재시작'
+      #       docker compose -f docker-compose-airflow.yaml up --build --force-recreate -d airflow-webserver airflow-scheduler
+      #     fi
+
+      #     if echo "\$CHANGED_FILES" | grep -qE '^monitoring/|docker-compose-monitoring.yaml'; then
+      #       echo '▶️ Monitoring 변경 감지 → 재빌드 및 재시작'
+      #       docker compose -f docker-compose-monitoring.yaml up --build --force-recreate -d grafana prometheus cadvisor
+      #     fi
+          
+      #     if echo "$CHANGED_FILES" | grep -qE '^filebeat/|^docker-compose-elk.yaml$'; then
+      #       echo '📦 ELK 변경 감지 → 재시작'
+      #       docker compose -f docker-compose-elk.yaml up --force-recreate -d elasticsearch kibana filebeat
+      #     fi
+      #     EOF
+      #   env:
+      #     PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      #     SSH_USER: ${{ secrets.SSH_USER }}
+      #     SERVER_IP: ${{ secrets.SERVER_IP }}
 
       - name: Cleanup SSH Key
         run: rm -f id_rsa
