@@ -1,4 +1,6 @@
-replicaCount: 1
+replicaCount: 2
+
+app: fastapi
 
 image:
   repository: 329599615061.dkr.ecr.ap-northeast-2.amazonaws.com/byhyeon
