@@ -61,7 +61,7 @@ jobs:
           sudo chown $(whoami) ~/.kube/config
           export KUBECONFIG=\$HOME/.kube/config
 
-          echo '🔐 ECR Secret 생성 (무조건 갱신)'
+          echo '🔐 ECR Secret 생성- 무조건갱신'
           aws ecr get-login-password --region ap-northeast-2 | \
           kubectl create secret docker-registry ecr-registry \
             --docker-server=329599615061.dkr.ecr.ap-northeast-2.amazonaws.com \
