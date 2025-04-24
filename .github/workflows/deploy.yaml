@@ -71,11 +71,13 @@ jobs:
       #       --dry-run=client -o yaml | kubectl apply -f -
       #     EOF
 
-      - name: Step 2 - FastAPI Helm 배포
+      - name: FastAPI Helm 배포
         run: |
           ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << EOF
           set -e
           cd ~/byhyeon
+          git pull origin main
+          
           CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
 
           if echo "$CHANGED_FILES" | grep -qE '^helm/fastapi-chart/|^fastapi/'; then

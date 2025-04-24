@@ -1,0 +1,12 @@
+1. 현재 Pod 개수 확인
+
+kubectl get pods -n default -l app=fastapi
+
+2. Deployment 내부 상태 확인
+kubectl describe deploy fastapi -n default
+
+3. ReplicaSet 개수 확인 
+kubectl get rs -n default | grep fastapi
+
+4. Helm 상태 확인
+helm status fastapi -n default
