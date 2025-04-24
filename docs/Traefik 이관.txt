@@ -1,0 +1,105 @@
+#######################################################
+# NGINX 종료 후 Traefik으로 트래픽 포트 이관
+#######################################################
+
+1. NGINX 종료 및 비활성화 (80/443 포트 확보)
+--------------------------------------------------
+sudo systemctl stop nginx
+sudo systemctl disable nginx
+
+
+2. Traefik 동작 확인
+--------------------------------------------------
+kubectl get pods -n kube-system | grep traefik
+
+
+3. cert-manager 설치 및 ClusterIssuer 세팅
+--------------------------------------------------
+# cert-manager 설치 (Let’s Encrypt 자동 발급용)
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.yaml
+
+# ClusterIssuer 생성
+kubectl apply -f clusterissuer.yaml
+
+
+4. AWS CLI 및 ECR 연동
+--------------------------------------------------
+# AWS CLI 설치
+pip3 install awscli --user --break-system-packages
+
+# PATH 등록
+echo 'export PATH=$PATH:$HOME/.local/bin' >> ~/.bashrc
+source ~/.bashrc
+
+# 설치 확인
+aws --version
+
+# ECR 시크릿 생성
+aws ecr get-login-password --region ap-northeast-2 | \
+kubectl create secret docker-registry ecr-registry \
+--docker-server=329599615061.dkr.ecr.ap-northeast-2.amazonaws.com \
+--docker-username=AWS \
+--docker-password=$(aws ecr get-login-password --region ap-northeast-2) \
+--docker-email=example@test.com
+
+
+5. 서비스 타입을 NodePort로 변경 후 방화벽 열기
+--------------------------------------------------
+# fastapi-service.yaml 적용
+kubectl apply -f k8s/fastapi/fastapi-service.yaml
+
+# 방화벽에서 nodeport 허용 (예: 30080)
+sudo ufw allow 30080/tcp
+
+
+6. NGINX 대체 프록시 설정 시 참고
+--------------------------------------------------
+# 예시 설정 (사용하지 않을 경우 생략 가능)
+location / {
+  proxy_pass http://127.0.0.1:30080/;
+  proxy_set_header Host $host;
+  proxy_set_header X-Real-IP $remote_addr;
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header X-Forwarded-Proto $scheme;
+}
+
+
+# 🔧 NGINX 종료 후 Traefik 포트 확보
+sudo systemctl stop nginx
+sudo systemctl disable nginx
+
+# 🧭 Traefik 동작 확인
+kubectl get pods -n kube-system | grep traefik
+
+# 🔐 cert-manager 설치 (Let's Encrypt 인증서 발급용)
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.yaml
+
+# 🔐 ClusterIssuer 생성
+kubectl apply -f clusterissuer.yaml
+
+# ⚙️ AWS CLI 설치 및 설정
+pip3 install awscli --user --break-system-packages
+echo 'export PATH=$PATH:$HOME/.local/bin' >> ~/.bashrc
+source ~/.bashrc
+aws configure  # Access Key, Secret, Region 설정
+
+# 🔑 ECR용 imagePullSecret 생성
+aws ecr get-login-password --region ap-northeast-2 | \
+kubectl create secret docker-registry ecr-registry \
+--docker-server=329599615061.dkr.ecr.ap-northeast-2.amazonaws.com \
+--docker-username=AWS \
+--docker-password=$(aws ecr get-login-password --region ap-northeast-2) \
+--docker-email=example@test.com
+
+# 📦 FastAPI 배포 리소스 적용
+kubectl apply -f fastapi-deployment.yaml
+kubectl apply -f fastapi-service.yaml
+kubectl apply -f fastapi-ingress.yaml
+
+# 🔐 TLS 인증서 상태 확인
+kubectl get certificate
+kubectl describe certificate fastapi-tls
+
+# 🔁 문제가 있으면 삭제 후 재생성
+kubectl delete certificate fastapi-tls
+kubectl apply -f fastapi-ingress.yaml

@@ -74,3 +74,5 @@ kubectl get secrets
 # 6. 안되면 환경변수로 기본 kubeconfig 지정 (영구)
 echo 'export KUBECONFIG=$HOME/.kube/config' >> ~/.bashrc
 source ~/.bashrc
+
+
