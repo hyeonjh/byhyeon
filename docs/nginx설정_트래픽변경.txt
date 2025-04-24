@@ -64,15 +64,3 @@ location / {
 }
 
 
-# nginx 종료후 80 , 443 포트를 트래픽으로 사용
-sudo systemctl stop nginx
-
-sudo systemctl disable nginx
-
-
-
-# 1. Traefik 동작 확인
-kubectl get pods -n kube-system | grep traefik
-
-# 2. cert-manager + ClusterIssuer 세팅 (Let’s Encrypt 자동 발급용)
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.yaml

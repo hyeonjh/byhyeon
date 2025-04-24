@@ -1,0 +1,32 @@
+replicaCount: 1
+
+image:
+  repository: 329599615061.dkr.ecr.ap-northeast-2.amazonaws.com/byhyeon
+  tag: fastapi-latest
+  pullPolicy: Always
+
+service:
+  type: NodePort
+  port: 8000
+  nodePort: 30080
+
+ingress:
+  enabled: true
+  hosts:
+    - byhyeon.com
+    - www.byhyeon.com
+  tlsSecret: fastapi-tls
+  ingressClass: traefik
+  clusterIssuer: letsencrypt-http
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "256Mi"
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+
+secrets:
+  imagePullSecret: ecr-registry
+  envSecretRef: byhyeon-secret

@@ -29,9 +29,9 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      # 3) FastAPI 이미지 빌드 & 푸시 (변경 감지 없이 항상)
+      # 3) FastAPI 이미지 빌드 & 푸시
       - name: Build and push FastAPI image
-        if: github.event_name == 'push' && contains(github.event.head_commit.message, 'fastapi')
+        if: github.event_name == 'push' && (contains(github.event.head_commit.message, 'fastapi') || contains(join(github.event.commits.*.modified, '\n'), 'fastapi/') || contains(join(github.event.commits.*.added, '\n'), 'fastapi/'))
         uses: docker/build-push-action@v5
         with:
           context: ./fastapi
@@ -62,9 +62,9 @@ jobs:
           echo "🔄 변경된 파일 목록:"
           echo "$CHANGED_FILES" | sed '/^$/d' | sed 's/^/📁 /'
 
-          if echo "$CHANGED_FILES" | grep -qE '^k8s/fastapi/|^fastapi/'; then
-            echo '🚀 FastAPI Kubernetes 변경 감지 → kubectl apply'
-            kubectl apply -f ~/byhyeon/k8s/fastapi/
+          if echo "$CHANGED_FILES" | grep -qE '^helm/fastapi-chart/|^fastapi/'; then
+            echo '🚀 FastAPI Helm 차트 변경 감지 → helm upgrade 실행'
+            helm upgrade --install fastapi ./helm/fastapi-chart -n default
           fi
 
           if echo "\$CHANGED_FILES" | grep -qE '^airflow/|docker-compose-airflow.yaml'; then
