@@ -78,10 +78,12 @@ jobs:
           cd ~/byhyeon
           git pull origin main
           
+          PREV_COMMIT=$(git rev-parse HEAD@{1})
+          CURR_COMMIT=$(git rev-parse HEAD)
+          
+          CHANGED_FILES=$(git diff --name-only $PREV_COMMIT $CURR_COMMIT)
+
           echo "🔍 변경된 파일 목록:"
-          CHANGED_FILES=$(git diff --name-only FETCH_HEAD)
-          echo "$CHANGED_FILES"
-          CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r FETCH_HEAD)
           echo "$CHANGED_FILES"
 
           if echo "$CHANGED_FILES" | grep -qE '(^|/)(helm/fastapi-chart/|fastapi/)'; then
