@@ -78,11 +78,19 @@ jobs:
           cd ~/byhyeon
           git pull origin main
           
-          CHANGED_FILES=\$(git diff --name-only origin/main@{1} origin/main)
+          CHANGED_FILES=$(git diff --name-only FETCH_HEAD origin/main)
 
           if echo "$CHANGED_FILES" | grep -qE '^helm/fastapi-chart/|^fastapi/'; then
             echo '🚀 FastAPI Helm 차트 변경 감지 → helm upgrade 실행'
+            
             helm upgrade --install fastapi ./helm/fastapi-chart -n default -f ./helm/fastapi-chart/values.yaml
+            
+            echo '🔄 Deployment rollout 강제 재시작'
+            kubectl rollout restart deployment fastapi -n default
+            
+            echo '✅ FastAPI 재배포 완료'
+          else
+            echo 'ℹ️ FastAPI 관련 변경사항 없음'
           fi
           EOF
 
