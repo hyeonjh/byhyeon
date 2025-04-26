@@ -77,9 +77,9 @@ jobs:
           set -e
           cd ~/byhyeon
 
-          git fetch origin main
+          git pull origin main
 
-          CHANGED_FILES=$(git diff --name-only HEAD FETCH_HEAD)
+          CHANGE_FILES=$(git diff --name-only HEAD@{1} HEAD)
           
           echo "🔍 변경된 파일 목록:"
           if [ -n "$CHANGED_FILES" ]; then
@@ -87,8 +87,6 @@ jobs:
           else
             echo "(no changed files)"
           fi
-
-          git pull origin main
 
           if echo "$CHANGED_FILES" | grep -qE '(^|/)(helm/fastapi-chart/|fastapi/)'; then
             echo '🚀 FastAPI Helm 차트 변경 감지 → helm upgrade 실행'
