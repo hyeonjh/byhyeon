@@ -76,12 +76,13 @@ jobs:
           ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << EOF
           set -e
           cd ~/byhyeon
-          git pull origin main
-          
-          CHANGED_FILES=$(git diff --name-only FETCH_HEAD HEAD)
 
+          git fetch origin main
+          CHANGED_FILES=$(git diff --name-only HEAD origin/main)
           echo "🔍 변경된 파일 목록:"
           echo "$CHANGED_FILES"
+
+          git pull origin main
 
           if echo "$CHANGED_FILES" | grep -qE '(^|/)(helm/fastapi-chart/|fastapi/)'; then
             echo '🚀 FastAPI Helm 차트 변경 감지 → helm upgrade 실행'
