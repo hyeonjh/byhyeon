@@ -78,9 +78,13 @@ jobs:
           cd ~/byhyeon
           git pull origin main
           
+          echo "🔍 변경된 파일 목록:"
           CHANGED_FILES=$(git diff --name-only FETCH_HEAD)
+          echo "$CHANGED_FILES"
+          CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r FETCH_HEAD)
+          echo "$CHANGED_FILES"
 
-          if echo "$CHANGED_FILES" | grep -qE '^helm/fastapi-chart/|^fastapi/'; then
+          if echo "$CHANGED_FILES" | grep -qE '(^|/)(helm/fastapi-chart/|fastapi/)'; then
             echo '🚀 FastAPI Helm 차트 변경 감지 → helm upgrade 실행'
             
             helm upgrade --install fastapi ./helm/fastapi-chart -n default -f ./helm/fastapi-chart/values.yaml
