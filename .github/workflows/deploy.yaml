@@ -79,7 +79,7 @@ jobs:
 
           git fetch origin main
 
-          CHANGED_FILES=$(git diff --name-only FETCH_HEAD HEAD)
+          CHANGED_FILES=$(git diff --name-only HEAD FETCH_HEAD)
           
           echo "🔍 변경된 파일 목록:"
           printf "%s\n" "$CHANGED_FILES"
