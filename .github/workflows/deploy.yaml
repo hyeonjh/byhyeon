@@ -79,7 +79,7 @@ jobs:
 
           git fetch origin main
 
-          CHANGED_FILES=$(git diff --name-only HEAD origin/main)
+          CHANGED_FILES=$(git diff --name-only HEAD FETCH_HEAD)
           
           echo "🔍 변경된 파일 목록:"
           if [ -n "$CHANGED_FILES" ]; then
@@ -97,7 +97,7 @@ jobs:
             
             echo '🔄 Deployment rollout 강제 재시작'
             kubectl rollout restart deployment fastapi -n default
-            
+
             echo '✅ FastAPI 재배포 완료'
           else
             echo 'ℹ️ FastAPI 관련 변경사항 없음'
