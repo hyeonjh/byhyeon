@@ -78,10 +78,7 @@ jobs:
           cd ~/byhyeon
           git pull origin main
           
-          PREV_COMMIT=$(git rev-parse HEAD@{1})
-          CURR_COMMIT=$(git rev-parse HEAD)
-          
-          CHANGED_FILES=$(git diff --name-only $PREV_COMMIT $CURR_COMMIT)
+          CHANGED_FILES=$(git diff --name-only HEAD origin/main)
 
           echo "🔍 변경된 파일 목록:"
           echo "$CHANGED_FILES"
