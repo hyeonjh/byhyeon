@@ -78,7 +78,7 @@ jobs:
           cd ~/byhyeon
           git pull origin main
           
-          CHANGED_FILES=$(git diff --name-only HEAD origin/main)
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD)
 
           echo "🔍 변경된 파일 목록:"
           echo "$CHANGED_FILES"
