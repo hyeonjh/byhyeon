@@ -1,0 +1,16 @@
+server:
+  global:
+    scrape_interval: 10s
+
+  extraScrapeConfigs:
+    - job_name: 'kubernetes-cadvisor'
+      scheme: https
+      metrics_path: /metrics/cadvisor
+      tls_config:
+        insecure_skip_verify: true
+      kubernetes_sd_configs:
+        - role: node
+
+service:
+  type: ClusterIP
+  port: 80

@@ -1,0 +1,19 @@
+adminPassword: admin
+
+service:
+  type: LoadBalancer
+  port: 80
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        url: http://prometheus-server.monitoring.svc.cluster.local
+        access: proxy
+        isDefault: true
+
+grafana.ini:
+  server:
+    root_url: http://localhost:3000
