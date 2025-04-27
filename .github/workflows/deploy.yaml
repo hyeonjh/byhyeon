@@ -82,7 +82,7 @@ jobs:
 
           echo '🔐 helm 폴더 권한 수정'
           chmod -R 755 helm
-          sudo chown -R $(whoami):$(whoami) helm
+          chown -R $(whoami):$(whoami) helm
 
           CHANGED_FILES=$(git diff --name-only HEAD@{1} HEAD)
 
