@@ -12,3 +12,4 @@ spec:
       targetPort: {{ .Values.service.port }}
       nodePort: {{ .Values.service.nodePort }}
 
+#테스트
