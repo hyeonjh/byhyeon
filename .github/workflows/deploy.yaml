@@ -80,6 +80,10 @@ jobs:
           echo '📥 Git Pull'
           git pull origin main
 
+          echo '🔐 helm 폴더 권한 수정'
+          chmod -R 755 helm
+          sudo chown -R $(whoami):$(whoami) helm
+
           CHANGED_FILES=$(git diff --name-only HEAD@{1} HEAD)
 
           echo "🔍 변경된 파일 목록:"
@@ -100,18 +104,20 @@ jobs:
             echo 'ℹ️ FastAPI 관련 변경사항 없음'
           fi
 
-          # Monitoring (Prometheus) 변경 감지
+          # Prometheus Helm 배포
           if echo "\$CHANGED_FILES" | grep -qE '(^|/)helm/monitoring/prometheus/'; then
             echo '🚀 Prometheus Helm 차트 변경 감지 → helm upgrade 실행'
             helm upgrade --install prometheus ./helm/monitoring/prometheus -n monitoring --create-namespace -f ./helm/monitoring/prometheus/values.yaml
+            echo '✅ Prometheus 재배포 완료'
           else
             echo 'ℹ️ Prometheus 관련 변경사항 없음'
           fi
 
-          # Monitoring (Grafana) 변경 감지
+          # Grafana Helm 배포
           if echo "\$CHANGED_FILES" | grep -qE '(^|/)helm/monitoring/grafana/'; then
             echo '🚀 Grafana Helm 차트 변경 감지 → helm upgrade 실행'
             helm upgrade --install grafana ./helm/monitoring/grafana -n monitoring --create-namespace -f ./helm/monitoring/grafana/values.yaml
+            echo '✅ Grafana 재배포 완료'
           else
             echo 'ℹ️ Grafana 관련 변경사항 없음'
           fi
