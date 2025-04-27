@@ -71,35 +71,51 @@ jobs:
       #       --dry-run=client -o yaml | kubectl apply -f -
       #     EOF
 
-      - name: FastAPI Helm 배포
+      - name: FastAPI + Monitoring Helm 배포
         run: |
           ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << EOF
           set -e
           cd ~/byhyeon
 
+          echo '📥 Git Pull'
           git pull origin main
 
-          CHANGE_FILES=$(git diff --name-only HEAD@{1} HEAD)
-          
+          CHANGED_FILES=$(git diff --name-only HEAD@{1} HEAD)
+
           echo "🔍 변경된 파일 목록:"
-          if [ -n "$CHANGED_FILES" ]; then
-            printf "%s\n" "$CHANGED_FILES"
+          if [ -n "\$CHANGED_FILES" ]; then
+            printf "%s\n" "\$CHANGED_FILES"
           else
             echo "(no changed files)"
           fi
 
-          if echo "$CHANGED_FILES" | grep -qE '(^|/)(helm/fastapi-chart/|fastapi/)'; then
+          # FastAPI 변경 감지
+          if echo "\$CHANGED_FILES" | grep -qE '(^|/)(helm/fastapi-chart/|fastapi/)'; then
             echo '🚀 FastAPI Helm 차트 변경 감지 → helm upgrade 실행'
-            
-            helm upgrade --install fastapi ./helm/fastapi-chart -n default -f ./helm/fastapi-chart/values.yaml
-            
-            echo '🔄 Deployment rollout 강제 재시작'
-            kubectl rollout restart deployment fastapi -n default
-
+            helm upgrade --install fastapi ./helm/fastapi-chart -n fastapi --create-namespace -f ./helm/fastapi-chart/values.yaml --create-namespace
+            echo '🔄 FastAPI Deployment rollout 강제 재시작'
+            kubectl rollout restart deployment fastapi -n fastapi
             echo '✅ FastAPI 재배포 완료'
           else
             echo 'ℹ️ FastAPI 관련 변경사항 없음'
           fi
+
+          # Monitoring (Prometheus) 변경 감지
+          if echo "\$CHANGED_FILES" | grep -qE '(^|/)helm/monitoring/prometheus/'; then
+            echo '🚀 Prometheus Helm 차트 변경 감지 → helm upgrade 실행'
+            helm upgrade --install prometheus ./helm/monitoring/prometheus -n monitoring --create-namespace -f ./helm/monitoring/prometheus/values.yaml
+          else
+            echo 'ℹ️ Prometheus 관련 변경사항 없음'
+          fi
+
+          # Monitoring (Grafana) 변경 감지
+          if echo "\$CHANGED_FILES" | grep -qE '(^|/)helm/monitoring/grafana/'; then
+            echo '🚀 Grafana Helm 차트 변경 감지 → helm upgrade 실행'
+            helm upgrade --install grafana ./helm/monitoring/grafana -n monitoring --create-namespace -f ./helm/monitoring/grafana/values.yaml
+          else
+            echo 'ℹ️ Grafana 관련 변경사항 없음'
+          fi
+
           EOF
 
 #####################변경전 deploy 
