@@ -93,7 +93,7 @@ if [ "${chart}" = "fastapi" ]; then
   kubectl rollout restart deployment fastapi -n fastapi
 fi
 EOF
-    done
+          done
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           SERVER_IP: ${{ secrets.SERVER_IP }}
