@@ -16,6 +16,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # 1) AWS 자격증명 설정 (Secrets.AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION 필요)
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -23,10 +24,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
+      # 2) ECR 로그인
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
+      # 3) FastAPI 이미지 빌드 & 푸시
       - name: Build and push FastAPI image
         if: github.event_name == 'push' && (contains(github.event.head_commit.message, 'fastapi') || contains(join(github.event.commits.*.modified, '\n'), 'fastapi/') || contains(join(github.event.commits.*.added, '\n'), 'fastapi/'))
         uses: docker/build-push-action@v5
@@ -45,13 +48,26 @@ jobs:
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
+      - name: Detect Changed Files
+        id: detect_changes
+        run: |
+          git fetch origin main
+          CHANGED_FILES=$(git diff --name-only origin/main@{1} origin/main)
+          echo "changed_files<<EOF" >> $GITHUB_ENV
+          echo "$CHANGED_FILES" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
       - name: Helm Package
         run: |
           mkdir -p packaged
           for chart in fastapi-chart monitoring/prometheus monitoring/grafana; do
-            echo "📦 Packaging $chart"
-            helm package helm/$chart -d packaged/
+            if echo "$changed_files" | grep -qE "(^|/)helm/${chart}/"; then
+              echo "📦 Packaging $chart"
+              helm package helm/$chart -d packaged/
+            fi
           done
+        env:
+          changed_files: ${{ env.changed_files }}
 
       - name: Upload Packaged Charts to Server
         run: |
@@ -69,12 +85,12 @@ jobs:
         run: |
           for chart in fastapi prometheus grafana; do
             echo "🚀 Deploying $chart"
-            ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+            ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no "$SSH_USER@$SERVER_IP" << 'EOF'
 set -e
 cd ~/byhyeon/helm
 helm upgrade --install ${chart} ./${chart}-*.tgz -n $( [ "${chart}" = "fastapi" ] && echo "fastapi" || echo "monitoring" ) --create-namespace
 if [ "${chart}" = "fastapi" ]; then
-  kubectl rollout restart deployment fastapi -n fastapi
+kubectl rollout restart deployment fastapi -n fastapi
 fi
 EOF
           done
