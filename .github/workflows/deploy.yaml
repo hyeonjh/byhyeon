@@ -86,7 +86,7 @@ jobs:
           for chart in fastapi prometheus grafana; do
             if echo "$changed_files" | grep -qE "(^|/)helm/(fastapi-chart|monitoring/${chart})/"; then
               echo "🚀 Deploying $chart"
-              ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << EOF
+              ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
                 set -e
                 cd ~/byhyeon/helm
                 helm upgrade --install ${chart} ./${chart}-*.tgz -n $( [ "${chart}" = "fastapi" ] && echo "fastapi" || echo "monitoring" ) --create-namespace
