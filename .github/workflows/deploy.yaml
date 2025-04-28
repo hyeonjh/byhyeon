@@ -92,7 +92,7 @@ jobs:
             if [ "${chart}" = "fastapi" ]; then
               kubectl rollout restart deployment fastapi -n fastapi
             fi
-            EOF
+EOF
           done
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
