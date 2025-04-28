@@ -48,130 +48,58 @@ jobs:
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # - name: Step 1 - Git Pull & Set KUBECONFIG & Create ECR Secret
-      #   run: |
-      #     ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-      #     set -e
-      #     cd ~/byhyeon
-      #     git pull origin main
-
-      #     echo '📁 KUBECONFIG 권한 유지하면서 ~/.kube/config 세팅'
-      #     mkdir -p ~/.kube
-      #     sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
-      #     sudo chown $(whoami) ~/.kube/config
-      #     chmod 600 ~/.kube/config
-
-      #     echo '🔐 ECR Secret 생성 - 무조건 갱신'
-      #     aws ecr get-login-password --region ap-northeast-2 | \
-      #     kubectl create secret docker-registry ecr-registry \
-      #       --docker-server=329599615061.dkr.ecr.ap-northeast-2.amazonaws.com \
-      #       --docker-username=AWS \
-      #       --docker-password=$(aws ecr get-login-password) \
-      #       --namespace=default \
-      #       --dry-run=client -o yaml | kubectl apply -f -
-      #     EOF
-
-      - name: FastAPI + Monitoring Helm 배포
+      - name: Detect Changed Files
+        id: detect_changes
         run: |
-          ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << EOF
-          set -e
-          cd ~/byhyeon
+          git fetch origin main
+          CHANGED_FILES=$(git diff --name-only origin/main@{1} origin/main)
+          echo "changed_files<<EOF" >> $GITHUB_ENV
+          echo "$CHANGED_FILES" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
 
-          echo '📥 Git Pull'
-          git pull origin main
+      - name: Helm Package
+        run: |
+          mkdir -p packaged
+          for chart in fastapi-chart monitoring/prometheus monitoring/grafana; do
+            if echo "$changed_files" | grep -qE "(^|/)helm/${chart}/"; then
+              echo "📦 Packaging $chart"
+              helm package helm/$chart -d packaged/
+            fi
+          done
+        env:
+          changed_files: ${{ env.changed_files }}
 
-          echo '🔐 helm 폴더 권한 수정'
-          chmod -R 755 helm
-          chown -R $(whoami):$(whoami) helm
-
-          CHANGED_FILES=$(git diff --name-only HEAD@{1} HEAD)
-
-          echo "🔍 변경된 파일 목록:"
-          if [ -n "\$CHANGED_FILES" ]; then
-            printf "%s\n" "\$CHANGED_FILES"
+      - name: Upload Packaged Charts to Server
+        run: |
+          if ls packaged/*.tgz 1> /dev/null 2>&1; then
+            echo '📤 패키지 서버로 전송'
+            rsync -avz --delete -e "ssh -i id_rsa -p 2222" packaged/ ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/byhyeon/helm/
           else
-            echo "(no changed files)"
+            echo '⚠️ 패키지된 파일 없음, 스킵'
           fi
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SERVER_IP: ${{ secrets.SERVER_IP }}
 
-          # FastAPI 변경 감지
-          if echo "\$CHANGED_FILES" | grep -qE '(^|/)(helm/fastapi-chart/|fastapi/)'; then
-            echo '🚀 FastAPI Helm 차트 변경 감지 → helm upgrade 실행'
-            helm upgrade --install fastapi ./helm/fastapi-chart -n fastapi --create-namespace -f ./helm/fastapi-chart/values.yaml --create-namespace
-            echo '🔄 FastAPI Deployment rollout 강제 재시작'
-            kubectl rollout restart deployment fastapi -n fastapi
-            echo '✅ FastAPI 재배포 완료'
-          else
-            echo 'ℹ️ FastAPI 관련 변경사항 없음'
-          fi
-
-          # Prometheus Helm 배포
-          if echo "\$CHANGED_FILES" | grep -qE '(^|/)helm/monitoring/prometheus/'; then
-            echo '🚀 Prometheus Helm 차트 변경 감지 → helm upgrade 실행'
-            helm upgrade --install prometheus ./helm/monitoring/prometheus -n monitoring --create-namespace -f ./helm/monitoring/prometheus/values.yaml
-            echo '✅ Prometheus 재배포 완료'
-          else
-            echo 'ℹ️ Prometheus 관련 변경사항 없음'
-          fi
-
-          # Grafana Helm 배포
-          if echo "\$CHANGED_FILES" | grep -qE '(^|/)helm/monitoring/grafana/'; then
-            echo '🚀 Grafana Helm 차트 변경 감지 → helm upgrade 실행'
-            helm upgrade --install grafana ./helm/monitoring/grafana -n monitoring --create-namespace -f ./helm/monitoring/grafana/values.yaml
-            echo '✅ Grafana 재배포 완료'
-          else
-            echo 'ℹ️ Grafana 관련 변경사항 없음'
-          fi
-
-          EOF
-
-#####################변경전 deploy 
-      # - name: Deploy changed services
-      #   run: |
-      #     chmod 600 id_rsa
-      #     ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << EOF
-      #     set -e
-      #     mkdir -p ~/byhyeon && cd ~/byhyeon
-      #     git pull origin main
-
-      #     echo '🔐 ECR Secret 무조건 갱신'
-      #     aws ecr get-login-password --region ap-northeast-2 | \
-      #     kubectl create secret docker-registry ecr-registry \
-      #       --docker-server=329599615061.dkr.ecr.ap-northeast-2.amazonaws.com \
-      #       --docker-username=AWS \
-      #       --docker-password=$(aws ecr get-login-password) \
-      #       --namespace=default \
-      #       --dry-run=client -o yaml | kubectl apply -f -
-
-      #     # 안전하게 현재 커밋 기준으로만 변경된 파일 확인
-      #     CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
-
-      #     echo "🔄 변경된 파일 목록:"
-      #     echo "$CHANGED_FILES" | sed '/^$/d' | sed 's/^/📁 /'
-
-      #     if echo "$CHANGED_FILES" | grep -qE '^helm/fastapi-chart/|^fastapi/'; then
-      #       echo '🚀 FastAPI Helm 차트 변경 감지 → helm upgrade 실행'
-      #       helm upgrade --install fastapi ./helm/fastapi-chart -n default
-      #     fi
-
-      #     if echo "\$CHANGED_FILES" | grep -qE '^airflow/|docker-compose-airflow.yaml'; then
-      #       echo '▶️ Airflow 변경 감지 → 재빌드 및 재시작'
-      #       docker compose -f docker-compose-airflow.yaml up --build --force-recreate -d airflow-webserver airflow-scheduler
-      #     fi
-
-      #     if echo "\$CHANGED_FILES" | grep -qE '^monitoring/|docker-compose-monitoring.yaml'; then
-      #       echo '▶️ Monitoring 변경 감지 → 재빌드 및 재시작'
-      #       docker compose -f docker-compose-monitoring.yaml up --build --force-recreate -d grafana prometheus cadvisor
-      #     fi
-          
-      #     if echo "$CHANGED_FILES" | grep -qE '^filebeat/|^docker-compose-elk.yaml$'; then
-      #       echo '📦 ELK 변경 감지 → 재시작'
-      #       docker compose -f docker-compose-elk.yaml up --force-recreate -d elasticsearch kibana filebeat
-      #     fi
-      #     EOF
-      #   env:
-      #     PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      #     SSH_USER: ${{ secrets.SSH_USER }}
-      #     SERVER_IP: ${{ secrets.SERVER_IP }}
+      - name: Helm Upgrade Deploy
+        run: |
+          for chart in fastapi prometheus grafana; do
+            if echo "$changed_files" | grep -qE "(^|/)helm/(fastapi-chart|monitoring/${chart})/"; then
+              echo "🚀 Deploying $chart"
+              ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << EOF
+                set -e
+                cd ~/byhyeon/helm
+                helm upgrade --install ${chart} ./${chart}-*.tgz -n $( [ "${chart}" = "fastapi" ] && echo "fastapi" || echo "monitoring" ) --create-namespace
+                if [ "${chart}" = "fastapi" ]; then
+                  kubectl rollout restart deployment fastapi -n fastapi
+                fi
+              EOF
+            fi
+          done
+        env:
+          changed_files: ${{ env.changed_files }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SERVER_IP: ${{ secrets.SERVER_IP }}
 
       - name: Cleanup SSH Key
         run: rm -f id_rsa
