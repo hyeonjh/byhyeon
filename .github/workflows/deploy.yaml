@@ -83,17 +83,21 @@ jobs:
 
       - name: Helm Upgrade Deploy
         run: |
-          for chart in fastapi prometheus grafana; do
-            echo "🚀 Deploying $chart"
-            ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no "$SSH_USER@$SERVER_IP" << EOF
+          echo "🚀 Deploying all charts"
+          ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no "$SSH_USER@$SERVER_IP" << EOF
             set -e
             cd ~/byhyeon/helm
-            helm upgrade --install ${chart} ./${chart}-*.tgz -n $( [ "${chart}" = "fastapi" ] && echo "fastapi" || echo "monitoring" ) --create-namespace
-            if [ "${chart}" = "fastapi" ]; then
-              kubectl rollout restart deployment fastapi -n fastapi
-            fi
-EOF
-          done
+
+            echo "🚀 Deploying fastapi"
+            helm upgrade --install fastapi ./fastapi-*.tgz -n fastapi --create-namespace
+            kubectl rollout restart deployment fastapi -n fastapi
+
+            echo "🚀 Deploying prometheus"
+            helm upgrade --install prometheus ./prometheus-*.tgz -n monitoring --create-namespace
+
+            echo "🚀 Deploying grafana"
+            helm upgrade --install grafana ./grafana-*.tgz -n monitoring --create-namespace
+          EOF
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           SERVER_IP: ${{ secrets.SERVER_IP }}
