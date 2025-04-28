@@ -85,7 +85,7 @@ jobs:
         run: |
           for chart in fastapi prometheus grafana; do
             echo "🚀 Deploying $chart"
-            ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no "$SSH_USER@$SERVER_IP" << 'EOF'
+            ssh -i id_rsa -p 2222 -o StrictHostKeyChecking=no "$SSH_USER@$SERVER_IP" << EOF
             set -e
             cd ~/byhyeon/helm
             helm upgrade --install ${chart} ./${chart}-*.tgz -n $( [ "${chart}" = "fastapi" ] && echo "fastapi" || echo "monitoring" ) --create-namespace
