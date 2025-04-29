@@ -32,6 +32,8 @@ spec:
                 {{- toYaml .Values.env | nindent 16 }}
           restartPolicy: OnFailure
           serviceAccountName: ecr-access-sa
+          imagePullSecrets:
+            - name: ecr-registry
 ---
 apiVersion: v1
 kind: ServiceAccount
