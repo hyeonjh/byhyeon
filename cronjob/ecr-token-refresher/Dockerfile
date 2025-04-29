@@ -6,3 +6,4 @@ RUN yum install -y curl && \
     rm -f kubectl
 
 CMD ["/bin/sh"]
+#test1
