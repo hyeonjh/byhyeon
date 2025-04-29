@@ -1,0 +1,23 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: {{ .Values.rbac.targetNamespace }}
+  name: ecr-refresh-role
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "create", "update", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ecr-refresh-binding
+  namespace: {{ .Values.rbac.targetNamespace }}
+subjects:
+- kind: ServiceAccount
+  name: ecr-access-sa
+  namespace: kube-system
+roleRef:
+  kind: Role
+  name: ecr-refresh-role
+  apiGroup: rbac.authorization.k8s.io

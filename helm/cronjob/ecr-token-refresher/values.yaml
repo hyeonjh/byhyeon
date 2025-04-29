@@ -24,3 +24,6 @@ env:
 
   - name: AWS_REGION
     value: ap-northeast-2
+
+rbac: #fastapi 네임스페이스안에 secret 권한부여
+  targetNamespace: fastapi
