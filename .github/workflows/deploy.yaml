@@ -48,35 +48,29 @@ jobs:
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Detect Changed Files
-        id: detect_changes
-        run: |
-          git fetch origin main
-          CHANGED_FILES=$(git diff --name-only origin/main@{1} origin/main)
-          echo "changed_files<<EOF" >> $GITHUB_ENV
-          echo "$CHANGED_FILES" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+      # - name: Detect Changed Files
+      #   id: detect_changes
+      #   run: |
+      #     git fetch origin main
+      #     CHANGED_FILES=$(git diff --name-only origin/main@{1} origin/main)
+      #     echo "changed_files<<EOF" >> $GITHUB_ENV
+      #     echo "$CHANGED_FILES" >> $GITHUB_ENV
+      #     echo "EOF" >> $GITHUB_ENV
 
-      - name: Helm Package
+      - name: Helm Package Charts
         run: |
           mkdir -p packaged
-          for chart in fastapi-chart monitoring/prometheus monitoring/grafana; do
-            if echo "$changed_files" | grep -qE "(^|/)helm/${chart}/"; then
-              echo "📦 Packaging $chart"
-              helm package helm/$chart -d packaged/
-            fi
-          done
-        env:
-          changed_files: ${{ env.changed_files }}
+          echo "📦 Packaging fastapi"
+          helm package helm/fastapi-chart -d packaged/
+          echo "📦 Packaging prometheus"
+          helm package helm/monitoring/prometheus -d packaged/
+          echo "📦 Packaging grafana"
+          helm package helm/monitoring/grafana -d packaged/
 
       - name: Upload Packaged Charts to Server
         run: |
-          if ls packaged/*.tgz 1> /dev/null 2>&1; then
-            echo '📤 패키지 서버로 전송'
-            rsync -avz --delete -e "ssh -i id_rsa -p 2222" packaged/ ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/byhyeon/helm/
-          else
-            echo '⚠️ 패키지된 파일 없음, 스킵'
-          fi
+          echo '📤 Uploading packaged charts to server'
+          rsync -avz --delete -e "ssh -i id_rsa -p 2222" packaged/ ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/byhyeon/helm/
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           SERVER_IP: ${{ secrets.SERVER_IP }}
