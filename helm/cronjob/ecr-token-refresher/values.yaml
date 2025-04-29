@@ -8,3 +8,19 @@ image:
   repository: 329599615061.dkr.ecr.ap-northeast-2.amazonaws.com/ecr-token-refresher
   tag: latest
   pullPolicy: Always
+
+env:
+  - name: AWS_ACCESS_KEY_ID
+    valueFrom:
+      secretKeyRef:
+        name: byhyeon-secret
+        key: AWS_ACCESS_KEY_ID
+
+  - name: AWS_SECRET_ACCESS_KEY
+    valueFrom:
+      secretKeyRef:
+        name: byhyeon-secret
+        key: AWS_SECRET_ACCESS_KEY
+
+  - name: AWS_REGION
+    value: ap-northeast-2
