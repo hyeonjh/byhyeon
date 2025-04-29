@@ -60,6 +60,8 @@ jobs:
       - name: Helm Package Charts
         run: |
           mkdir -p packaged
+          echo "📦 Packaging cronjab"
+          helm package helm/cronjob/ecr-token-refresher -d packaged/
           echo "📦 Packaging fastapi"
           helm package helm/fastapi-chart -d packaged/
           echo "📦 Packaging prometheus"
@@ -83,7 +85,7 @@ jobs:
             cd ~/byhyeon/helm
 
             echo "🚀 Deploying ecr-token-refresher"
-            helm upgrade --install ecr-token-refresher ./cronjob/ecr-token-refresher -n kube-system --create-namespace
+            helm upgrade --install ecr-token-refresher ./ecr-token-refresher-*.tgz -n kube-system --create-namespace
 
             echo "🚀 Deploying fastapi"
             helm upgrade --install fastapi ./fastapi-*.tgz -n fastapi --create-namespace
