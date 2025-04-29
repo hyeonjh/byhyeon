@@ -11,7 +11,8 @@ spec:
         spec:
           containers:
             - name: ecr-login
-              image: amazon/aws-cli
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
               command:
                 - /bin/sh
                 - -c
@@ -27,6 +28,8 @@ spec:
                   aws ecr describe-repositories
 
                   echo "✅ ECR refresh completed!"
+              env:
+                {{- toYaml .Values.env | nindent 16 }}
           restartPolicy: OnFailure
           serviceAccountName: ecr-access-sa
 ---
