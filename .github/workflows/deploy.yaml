@@ -29,7 +29,17 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      # 3) FastAPI 이미지 빌드 & 푸시
+      # 3) ecr-token-refresher 이미지 빌드 & 푸시
+      - name: Build and push ecr-token-refresher image
+        if: github.event_name == 'push' && (contains(github.event.head_commit.message, 'ecr-token-refresher') || contains(join(github.event.commits.*.modified, '\n'), 'cronjob/ecr-token-refresher/') || contains(join(github.event.commits.*.added, '\n'), 'cronjob/ecr-token-refresher/'))
+        uses: docker/build-push-action@v5
+        with:
+          context: ./cronjob/ecr-token-refresher
+          file: ./cronjob/ecr-token-refresher/Dockerfile
+          push: true
+          tags: ${{ steps.login-ecr.outputs.registry }}/ecr-token-refresher:latest
+
+      # 4) FastAPI 이미지 빌드 & 푸시
       - name: Build and push FastAPI image
         if: github.event_name == 'push' && (contains(github.event.head_commit.message, 'fastapi') || contains(join(github.event.commits.*.modified, '\n'), 'fastapi/') || contains(join(github.event.commits.*.added, '\n'), 'fastapi/'))
         uses: docker/build-push-action@v5
