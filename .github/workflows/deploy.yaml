@@ -56,8 +56,8 @@ jobs:
       #     echo "changed_files<<EOF" >> $GITHUB_ENV
       #     echo "$CHANGED_FILES" >> $GITHUB_ENV
       #     echo "EOF" >> $GITHUB_ENV
-      
-      - name: Debug: Show chart files
+
+      - name: Debug: List chart path before packaging
         run: ls -R helm/cronjob/ecr-token-refresher
 
       - name: Helm Package Charts
