@@ -48,16 +48,7 @@ jobs:
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # - name: Detect Changed Files
-      #   id: detect_changes
-      #   run: |
-      #     git fetch origin main
-      #     CHANGED_FILES=$(git diff --name-only origin/main@{1} origin/main)
-      #     echo "changed_files<<EOF" >> $GITHUB_ENV
-      #     echo "$CHANGED_FILES" >> $GITHUB_ENV
-      #     echo "EOF" >> $GITHUB_ENV
-
-      - name: Debug: List chart path before packaging
+      - name: List chart path before packaging
         run: ls -R helm/cronjob/ecr-token-refresher
 
       - name: Helm Package Charts
