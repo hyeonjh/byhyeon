@@ -82,6 +82,9 @@ jobs:
             set -e
             cd ~/byhyeon/helm
 
+            echo "🚀 Deploying ecr-token-refresher"
+            helm upgrade --install ecr-token-refresher ./cronjob/ecr-token-refresher -n kube-system --create-namespace
+
             echo "🚀 Deploying fastapi"
             helm upgrade --install fastapi ./fastapi-*.tgz -n fastapi --create-namespace
             kubectl rollout restart deployment fastapi -n fastapi

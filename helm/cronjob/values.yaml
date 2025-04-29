@@ -1,0 +1,5 @@
+schedule: "0 */6 * * *"
+region: "ap-northeast-2"
+accountId: "329599615061"
+repository: "byhyeon"
+namespace: "fastapi"

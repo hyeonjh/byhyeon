@@ -1,0 +1,5 @@
+apiVersion: v2
+name: ecr-token-refresher
+description: Cronjob to refresh ECR docker-registry secret
+version: 0.1.0
+appVersion: "1.0"

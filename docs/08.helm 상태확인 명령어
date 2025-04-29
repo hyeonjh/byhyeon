@@ -1,0 +1,20 @@
+
+
+# Helm 릴리스 상태 확인
+helm list -n fastapi
+helm list -n monitoring
+
+# Pod 상태 확인
+kubectl get pods -n fastapi
+kubectl get pods -n monitoring
+
+# Ingress 상태 확인
+kubectl get ingress -n fastapi
+kubectl get ingress -n monitoring
+
+# Secret (TLS 인증서) 확인
+kubectl get secret -n monitoring
+
+
+
+kubectl describe pod fastapi-86bb5f7869-p2cff -n fastapi
