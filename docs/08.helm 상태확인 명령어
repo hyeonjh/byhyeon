@@ -17,4 +17,8 @@ kubectl get secret -n monitoring
 
 
 
-kubectl describe pod fastapi-86bb5f7869-p2cff -n fastapi
+kubectl describe pod fastapi-7f746875bd-4k6hq -n fastapi
+
+kubectl get cronjobs -n kube-system
+
+kubectl get pods -n kube-system --sort-by=.metadata.creationTimestamp
