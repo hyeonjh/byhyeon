@@ -1,7 +1,7 @@
 adminPassword: admin
 
 service:
-  type: LoadBalancer
+  type: ClusterIP
   port: 80
 
 datasources:
@@ -16,4 +16,14 @@ datasources:
 
 grafana.ini:
   server:
-    root_url: http://localhost:3000
+    root_url: https://grafana.byhyeon.com/
+
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  hosts:
+    - grafana.byhyeon.com
+  tls:
+    - secretName: grafana-tls
+      hosts:
+        - grafana.byhyeon.com

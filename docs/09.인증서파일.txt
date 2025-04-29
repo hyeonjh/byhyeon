@@ -1,0 +1,15 @@
+1. fastapi 관련 인증서 
+
+hyeonjh@hyeonjh:~$ kubectl get ingress -n fastapi
+NAME              CLASS    HOSTS                         ADDRESS        PORTS     AGE
+fastapi-ingress   <none>   byhyeon.com,www.byhyeon.com   192.168.0.13   80, 443   24h
+hyeonjh@hyeonjh:~$ kubectl get pods -n cert-manager
+NAME                                       READY   STATUS    RESTARTS   AGE
+cert-manager-              1/1     Running   0          5d22h
+cert-manager-cainjector    1/1     Running   0          5d22h
+cert-manager-webhook       1/1     Running   0          5d22h
+
+cert-manager	메인 인증서 발급 컨트롤러	인증서 요청 만들고, 발급 요청 보내고, 발급된 걸 secret로 저장
+cert-manager-cainjector	CA 관련 자동 설정 (특수 경우)	인증서에 owner, caBundle 이런 메타데이터 자동으로 넣어줌 (안 써도 되지만 필요함)
+cert-manager-webhook	API 요청 검증기	쿠버네티스 admission webhook: 인증서 요청할 때 포맷/필수필드 같은 걸 강제로 체크
+
