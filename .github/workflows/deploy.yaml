@@ -56,11 +56,14 @@ jobs:
       #     echo "changed_files<<EOF" >> $GITHUB_ENV
       #     echo "$CHANGED_FILES" >> $GITHUB_ENV
       #     echo "EOF" >> $GITHUB_ENV
+      
+      - name: Debug: Show chart files
+        run: ls -R helm/cronjob/ecr-token-refresher
 
       - name: Helm Package Charts
         run: |
           mkdir -p packaged
-          echo "📦 Packaging cronjab"
+          echo "📦 Packaging cronjob"
           helm package helm/cronjob/ecr-token-refresher -d packaged/
           echo "📦 Packaging fastapi"
           helm package helm/fastapi-chart -d packaged/
