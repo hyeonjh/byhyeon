@@ -14,3 +14,18 @@ server:
 service:
   type: ClusterIP
   port: 80
+
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  hosts:
+    - prometheus.byhyeon.com
+  tls:
+    - secretName: prometheus-tls
+      hosts:
+        - prometheus.byhyeon.com
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-http
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
