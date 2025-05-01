@@ -1,0 +1,36 @@
+0.전체조회 
+kubectl get all -A | grep default
+
+1. Ingress
+kubectl get ingress -A
+
+2. Secret
+kubectl get secret -n default
+
+3.Service
+kubectl get svc -n default
+
+4.Deployment
+kubectl get deploy -n default
+
+5.Pods
+kubectl get pods -n default
+
+6.PVC
+kubectl get pvc -n default
+
+# Ingress 목록 (특히 오래된 도메인 포함된 것)
+kubectl get ingress -n default -o wide
+
+# Deployment / SVC / Pod / Secret 등 모두 보기
+kubectl get all -n default
+
+# 남아 있는 Secret 확인
+kubectl get secret -n default
+
+# 필요 없는 것 삭제
+kubectl delete ingress fastapi-ingress -n default
+kubectl delete secret <secret-name> -n default
+kubectl delete svc <svc-name> -n default
+kubectl delete deploy <deploy-name> -n default
+
