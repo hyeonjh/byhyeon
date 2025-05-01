@@ -18,6 +18,7 @@ service:
 ingress:
   enabled: true
   ingressClassName: traefik
+  clusterIssuer: letsencrypt-http
   hosts:
     - prometheus.byhyeon.com
   tls:
