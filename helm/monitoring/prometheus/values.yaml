@@ -24,12 +24,6 @@ ingress:
     - secretName: prometheus-tls
       hosts:
         - prometheus.byhyeon.com
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-http
-    kubernetes.io/ingress.class: traefik
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure
-    traefik.ingress.kubernetes.io/router.tls: "true"
-
 auth:
   enabled: true # basic auth 적용
   secretName: prometheus-auth-secret
