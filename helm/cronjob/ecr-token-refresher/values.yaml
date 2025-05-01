@@ -7,7 +7,7 @@ namespace: "fastapi"
 image:
   repository: 329599615061.dkr.ecr.ap-northeast-2.amazonaws.com/ecr-token-refresher
   tag: latest
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
 
 env:
   - name: AWS_ACCESS_KEY_ID
