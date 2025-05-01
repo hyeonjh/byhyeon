@@ -4,6 +4,11 @@ service:
   type: ClusterIP
   port: 80
 
+image:
+  repository: grafana/grafana
+  tag: 10.3.1
+  pullPolicy: IfNotPresent
+
 datasources:
   datasources.yaml:
     apiVersion: 1
