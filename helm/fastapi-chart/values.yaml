@@ -5,7 +5,7 @@ app: fastapi
 image:
   repository: 329599615061.dkr.ecr.ap-northeast-2.amazonaws.com/byhyeon
   tag: fastapi-latest
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
 
 service:
   type: NodePort
