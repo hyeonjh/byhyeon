@@ -8,7 +8,7 @@ metadata:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
     kubernetes.io/ingress.class: {{ .Values.ingress.ingressClassName }}
-    cert-manager.io/cluster-issuer: {{ .Values.ingress.tls[0].secretName | quote }}
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.clusterIssuer }}
     {{- if .Values.auth.enabled }}
     traefik.ingress.kubernetes.io/router.middlewares: {{ .Release.Namespace }}-{{ .Release.Name }}-auth@kubernetescrd
     {{- end }}

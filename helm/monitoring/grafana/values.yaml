@@ -21,6 +21,7 @@ grafana.ini:
 ingress:
   enabled: true
   ingressClassName: traefik
+  clusterIssuer: letsencrypt-http
   hosts:
     - grafana.byhyeon.com
   tls:
