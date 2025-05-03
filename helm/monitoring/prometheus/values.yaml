@@ -2,11 +2,6 @@ server:
   global:
     scrape_interval: 10s
 
-image:
-  repository: prom/prometheus
-  tag: v2.51.0
-  pullPolicy: IfNotPresent
-
   extraScrapeConfigs:
     - job_name: 'kubernetes-cadvisor'
       scheme: https
@@ -15,6 +10,11 @@ image:
         insecure_skip_verify: true
       kubernetes_sd_configs:
         - role: node
+
+image:
+  repository: prom/prometheus
+  tag: v2.51.0
+  pullPolicy: IfNotPresent
 
 service:
   type: ClusterIP
@@ -32,6 +32,7 @@ ingress:
     - secretName: prometheus-tls
       hosts:
         - prometheus.byhyeon.com
+
 auth:
-  enabled: true # basic auth 적용
+  enabled: true
   secretName: prometheus-auth-secret
