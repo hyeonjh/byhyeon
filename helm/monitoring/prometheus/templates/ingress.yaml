@@ -22,7 +22,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ $.Release.Name }}
+                name: prometheus
                 port:
                   number: {{ $.Values.service.port }}
     {{- end }}
