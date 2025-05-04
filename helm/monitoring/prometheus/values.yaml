@@ -45,3 +45,7 @@ ingress:
 auth:
   enabled: true
   secretName: prometheus-auth-secret
+
+serviceAccount:
+  create: false
+  name: prometheus
