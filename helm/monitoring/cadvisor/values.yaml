@@ -1,0 +1,16 @@
+image:
+  repository: gcr.io/cadvisor/cadvisor
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  port: 8080
+  type: ClusterIP
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 200Mi
+  requests:
+    cpu: 100m
+    memory: 100Mi
