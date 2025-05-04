@@ -46,10 +46,9 @@ auth:
   enabled: true
   secretName: prometheus-auth-secret
 
-serviceAccounts:
-  server:
-    create: true
-    name: prometheus
+serviceAccount:
+  create: true
+  name: prometheus
 
 rbac:
   create: true
