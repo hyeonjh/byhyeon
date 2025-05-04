@@ -1,8 +1,8 @@
-{{- if .Values.serverFiles.prometheus.yml }}
+{{- if .Values.serverFiles.prometheus }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}      # release 이름이 "prometheus" 라는 가정
+  name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
 data:
   prometheus.yml: |-
