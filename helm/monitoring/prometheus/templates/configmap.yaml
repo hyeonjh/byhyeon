@@ -5,4 +5,4 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   prometheus.yml: |
-{{ toYaml .Values.serverFiles.prometheus.yml | indent 4 }}
+    {{ toYaml (index .Values.serverFiles "prometheus.yml") | indent 4 }}
