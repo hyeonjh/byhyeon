@@ -20,6 +20,10 @@ spec:
           image: prom/node-exporter:latest
           args:
             - "--path.rootfs=/host"
+          ports:
+            - name: http
+              containerPort: 9100
+              protocol: TCP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
