@@ -19,6 +19,9 @@ serverFiles:
           - source_labels: [__meta_kubernetes_pod_container_port_number]
             action: keep
             regex: "8080"
+      - job_name: 'node-exporter'
+        static_configs:
+          - targets: ['node-exporter.monitoring.svc.cluster.local:9100']
 
 image:
   repository: prom/prometheus
