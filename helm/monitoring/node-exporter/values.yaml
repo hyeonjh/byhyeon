@@ -15,7 +15,7 @@ hostNetwork: true
 hostPID: true
 
 serviceMonitor:
-  enabled: true
+  enabled: false # Prometheus Operator 안씀
   interval: 15s
   scrapeTimeout: 10s
   labels:
