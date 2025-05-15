@@ -23,6 +23,9 @@ datasources:
 grafana.ini:
   server:
     root_url: https://grafana.byhyeon.com/
+  auth.anonymous:
+    enabled: true
+    org_role: Viewer
 
 ingress:
   enabled: true
