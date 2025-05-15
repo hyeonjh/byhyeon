@@ -78,7 +78,7 @@ jobs:
       - name: Upload Packaged Charts to Server
         run: |
           echo '📤 Uploading packaged charts to server'
-          rsync -avz --delete -e "ssh -i id_rsa -p 2222" packaged/ ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/byhyeon/helm/
+          rsync -avz -e "ssh -i id_rsa -p 2222" packaged/ ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/byhyeon/helm/
         env:
           SSH_USER: ${{ secrets.SSH_USER }}
           SERVER_IP: ${{ secrets.SERVER_IP }}
@@ -93,7 +93,7 @@ jobs:
             git pull origin main
 
             cd helm
-            
+
             echo "🚀 Deploying cadvisor"
             helm upgrade --install cadvisor ./cadvisor-*.tgz -n monitoring --create-namespace
 
