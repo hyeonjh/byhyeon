@@ -94,7 +94,7 @@ jobs:
             helm upgrade --install cadvisor ./cadvisor-*.tgz -n monitoring --create-namespace
 
             echo "🚀 Deploying node-exporter"
-            helm upgrade --install node-exporter ./node-exporter -n monitoring --create-namespace
+            helm upgrade --install node-exporter ./monitoring/node-exporter -n monitoring --create-namespace
 
             echo "🚀 Deploying ecr-token-refresher"
             helm upgrade --install ecr-token-refresher ./ecr-token-refresher-*.tgz -n kube-system --create-namespace
